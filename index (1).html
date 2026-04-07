@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CPE203 — ห้องปฏิบัติการสถิติ v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* Fallback fonts — page renders even if Google Fonts fails to load */
+:root {
+  --sans: 'Sarabun', 'TH Sarabun New', 'Tahoma', sans-serif;
+  --mono: 'IBM Plex Mono', 'Courier New', monospace;
+}
+</style>
+<style>
+:root {
+  --bg:#f4f3ef;--surface:#fff;--surface2:#f0efe9;--border:#e0ddd4;--border2:#ccc9be;
+  --text:#1a1916;--muted:#7a7670;--accent:#1d4ed8;--accent-light:#eff6ff;
+  --teal:#0f766e;--teal-light:#f0fdf9;--amber:#92400e;--amber-light:#fffbeb;
+  --coral:#c2410c;--coral-light:#fff7ed;--purple:#5b21b6;--purple-light:#f5f3ff;
+  --green:#14532d;--green-light:#f0fdf4;
+  --mono:'IBM Plex Mono',monospace;--sans:'Sarabun',sans-serif;--r:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.75;}
+
+/* HEADER */
+header{background:#111;color:#f4f3ef;padding:0 1.8rem;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;}
+.logo{font-family:var(--mono);font-size:12px;color:#93c5fd;letter-spacing:.07em;}
+.logo b{color:#f4f3ef;font-weight:600;}
+.pg-wrap{display:flex;align-items:center;gap:8px;}
+.pg-bar{width:130px;height:3px;background:#333;border-radius:2px;overflow:hidden;}
+.pg-fill{height:100%;background:#60a5fa;border-radius:2px;transition:width .4s;}
+.pg-txt{font-family:var(--mono);font-size:11px;color:#666;}
+
+/* TABS */
+.tab-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.8rem;display:flex;overflow-x:auto;white-space:nowrap;scrollbar-width:none;}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab{padding:.65rem 1rem;font-size:13px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;transition:color .15s,border-color .15s;user-select:none;white-space:nowrap;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab-badge{font-size:10px;font-family:var(--mono);padding:1px 6px;border-radius:99px;margin-right:5px;vertical-align:middle;}
+
+/* LAYOUT */
+.shell{display:flex;min-height:calc(100vh - 96px);}
+aside{width:196px;flex-shrink:0;border-right:1px solid var(--border);padding:1rem 0;position:sticky;top:96px;height:calc(100vh - 96px);overflow-y:auto;background:var(--surface);}
+.al{font-size:9.5px;font-family:var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);padding:.3rem 1rem;margin-top:.4rem;}
+.ai{display:flex;align-items:center;gap:7px;padding:.38rem 1rem;font-size:12.5px;color:var(--muted);cursor:pointer;border-left:2px solid transparent;transition:all .15s;}
+.ai:hover{color:var(--text);background:var(--surface2);}
+.ai.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-light);font-weight:500;}
+.ai.done{color:var(--teal);}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--border2);flex-shrink:0;}
+.ai.active .dot{background:var(--accent);}
+.ai.done .dot{background:var(--teal);}
+main{flex:1;padding:2rem 2.5rem 5rem;max-width:860px;}
+
+/* SECTION */
+.sec{display:none;animation:fu .28s ease;}
+.sec.visible{display:block;}
+@keyframes fu{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+/* TYPE */
+h1{font-size:22px;font-weight:700;margin-bottom:.25rem;line-height:1.3;}
+.sub{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.07em;margin-bottom:1.6rem;}
+h2{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;font-family:var(--mono);margin:2rem 0 .8rem;padding-bottom:.35rem;border-bottom:1px solid var(--border);}
+h3{font-size:15px;font-weight:600;color:var(--text);margin:1.2rem 0 .4rem;}
+p{color:#4a4844;margin-bottom:.7rem;}
+strong{color:var(--text);font-weight:600;}
+code{font-family:var(--mono);font-size:12px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;color:var(--teal);}
+
+/* CALLOUT */
+.box{border:1px solid var(--border);border-radius:var(--r);padding:.9rem 1.1rem;margin:1rem 0;font-size:14px;}
+.box.blue{border-left:4px solid var(--accent);background:var(--accent-light);}
+.box.teal{border-left:4px solid var(--teal);background:var(--teal-light);}
+.box.amber{border-left:4px solid #d97706;background:var(--amber-light);}
+.box.purple{border-left:4px solid var(--purple);background:var(--purple-light);}
+.box.coral{border-left:4px solid var(--coral);background:var(--coral-light);}
+.box-title{font-weight:600;color:var(--text);margin-bottom:.35rem;font-size:14px;}
+
+/* FORMULA CARD — clean layout */
+.fcard{background:#1e293b;border-radius:var(--r);padding:1.1rem 1.4rem;margin:1rem 0;overflow-x:auto;}
+.fcard-title{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin-bottom:.9rem;}
+.frow{display:flex;align-items:baseline;gap:.6rem;padding:.28rem 0;border-bottom:1px solid #2d3748;flex-wrap:wrap;}
+.frow:last-child{border-bottom:none;}
+.flabel{font-family:var(--mono);font-size:12px;color:#94a3b8;min-width:160px;flex-shrink:0;}
+.fval{font-family:var(--mono);font-size:13px;color:#e2e8f0;font-weight:600;}
+.fval .hl{color:#93c5fd;}
+.fval .hl2{color:#6ee7b7;}
+.fval .hl3{color:#fcd34d;}
+.fdesc{font-size:12px;color:#64748b;margin-left:auto;}
+
+/* COMPARE TABLE */
+.ctbl{width:100%;border-collapse:collapse;font-size:13.5px;margin:1rem 0;}
+.ctbl th{background:#1e293b;color:#e2e8f0;padding:.5rem .8rem;text-align:left;font-weight:500;font-size:12px;font-family:var(--mono);}
+.ctbl td{padding:.45rem .8rem;border-bottom:1px solid var(--border);vertical-align:top;}
+.ctbl tr:hover td{background:var(--surface2);}
+.ctbl .y{color:var(--teal);font-weight:600;}
+.ctbl .n{color:var(--coral);font-weight:600;}
+
+/* ANOVA TABLE */
+.atbl{width:100%;border-collapse:collapse;font-size:13px;margin:.7rem 0;overflow-x:auto;display:block;}
+.atbl th{background:#1e293b;color:#e2e8f0;padding:.45rem .7rem;text-align:left;font-weight:500;font-size:11px;font-family:var(--mono);white-space:nowrap;}
+.atbl td{padding:.4rem .7rem;border-bottom:1px solid var(--border);font-family:var(--mono);white-space:nowrap;}
+.atbl .tot td{font-weight:600;background:var(--surface2);}
+.atbl .fval-cell{color:var(--accent);font-weight:700;}
+
+/* PYTHON CODE */
+.pyblock{background:#0f172a;border-radius:var(--r);overflow:hidden;margin:1rem 0;}
+.pyhead{display:flex;align-items:center;justify-content:space-between;padding:.4rem .9rem;background:#1e293b;border-bottom:1px solid #2d3748;}
+.pylang{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:#64748b;text-transform:uppercase;}
+.pybody{padding:.9rem 1rem;overflow-x:auto;}
+.pybody pre{font-family:var(--mono);font-size:12.5px;color:#cbd5e1;line-height:1.9;white-space:pre;}
+.kw{color:#f472b6;}.fn{color:#818cf8;}.st{color:#86efac;}.cm{color:#475569;font-style:italic;}.nm{color:#fb923c;}.bi{color:#67e8f9;}
+
+/* STEP */
+.steps{display:flex;flex-direction:column;gap:.65rem;margin:1rem 0;}
+.step{display:flex;gap:.85rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.8rem 1rem;}
+.sn{flex-shrink:0;width:25px;height:25px;border-radius:50%;background:var(--accent-light);border:1.5px solid var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:700;}
+.sb h4{font-size:14px;font-weight:600;margin-bottom:.15rem;}
+.sb p{margin:0;font-size:13px;color:#4a4844;}
+
+/* CONTROLS */
+.vc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem;margin:1.2rem 0;}
+.vt{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.9rem;}
+canvas{display:block;border-radius:5px;background:#fafaf8;}
+.ctrls{display:flex;flex-wrap:wrap;gap:.85rem;align-items:flex-end;margin:.7rem 0 1rem;}
+.cg{display:flex;flex-direction:column;gap:.28rem;}
+.cl{font-size:12px;color:var(--muted);font-weight:500;}
+.cv{color:var(--accent);font-family:var(--mono);font-weight:700;}
+input[type=range]{-webkit-appearance:none;width:145px;height:3px;background:var(--border);border-radius:2px;outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;background:var(--accent);border-radius:50%;}
+input[type=number]{width:80px;padding:.3rem .5rem;border:1px solid var(--border);border-radius:5px;font-family:var(--mono);font-size:13px;background:var(--surface);color:var(--text);outline:none;}
+input[type=number]:focus{border-color:var(--accent);}
+select{padding:.3rem .6rem;border:1px solid var(--border);border-radius:5px;background:var(--surface);color:var(--text);font-family:var(--sans);font-size:13px;outline:none;cursor:pointer;}
+button{background:var(--accent);color:#fff;border:none;padding:.4rem .95rem;border-radius:5px;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:opacity .15s;}
+button:hover{opacity:.84;}
+button.sec{background:var(--surface);color:var(--text);border:1px solid var(--border2);}
+button.teal-btn{background:var(--teal);}
+
+/* RESULT BOX */
+.rbox{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:.9rem 1.1rem;margin:.8rem 0;font-family:var(--mono);font-size:13px;line-height:2;}
+.rrow{display:flex;justify-content:space-between;border-bottom:1px dashed var(--border);padding:.1rem 0;}
+.rrow:last-child{border-bottom:none;}
+.rv{color:var(--accent);font-weight:700;}
+.verdict{margin-top:.6rem;padding:.45rem .8rem;border-radius:5px;font-size:13.5px;font-weight:600;text-align:center;}
+.vr{background:#fee2e2;color:#991b1b;}
+.vf{background:#d1fae5;color:#065f46;}
+
+/* QUIZ */
+.qb{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;margin:.9rem 0;}
+.qq{font-size:14px;font-weight:600;color:var(--text);margin-bottom:.8rem;line-height:1.65;}
+.ql{display:flex;flex-direction:column;gap:.4rem;}
+.qo{display:flex;align-items:flex-start;gap:.6rem;padding:.55rem .8rem;border-radius:5px;border:1px solid var(--border);cursor:pointer;font-size:13.5px;background:var(--bg);transition:border-color .15s;}
+.qo:hover{border-color:var(--accent);}
+.qo input{margin-top:3px;accent-color:var(--accent);flex-shrink:0;}
+.qo.correct{border-color:var(--teal);background:var(--teal-light);}
+.qo.wrong{border-color:var(--coral);background:var(--coral-light);}
+.qfb{margin-top:.65rem;font-size:13px;padding:.5rem .8rem;border-radius:5px;display:none;line-height:1.55;}
+.qfb.show{display:block;}
+.qfb.ok{background:var(--teal-light);color:var(--teal);font-weight:500;}
+.qfb.no{background:var(--coral-light);color:var(--coral);}
+.score-disp{font-family:var(--mono);font-size:13px;color:var(--teal);margin-top:.8rem;}
+.iline{font-size:12px;color:var(--muted);font-family:var(--mono);margin-top:.45rem;min-height:16px;}
+
+/* NAV BUTTONS */
+.navbtns{display:flex;gap:.7rem;margin-top:2rem;padding-top:1.4rem;border-top:1px solid var(--border);}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+@media(max-width:680px){aside{display:none;}main{padding:1.2rem;}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">CPE203 <b>/ สถิติสำหรับวิศวกรคอมพิวเตอร์</b> — ห้องปฏิบัติการ</div>
+  <div class="pg-wrap"><div class="pg-bar"><div class="pg-fill" id="pgf" style="width:0%"></div></div><div class="pg-txt" id="pgt">0/6</div></div>
+</header>
+<div class="tab-bar" id="tabbar"></div>
+<div class="shell"><aside id="sidebar"></aside><main id="main"></main></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// MATH HELPERS
+// ══════════════════════════════════════════════════════
+const npdf=(x,m,s)=>Math.exp(-.5*((x-m)/s)**2)/(s*Math.sqrt(2*Math.PI));
+function ncdf(x){
+  const t=1/(1+.2316419*Math.abs(x));
+  const p=t*(.319381530+t*(-.356563782+t*(1.781477937+t*(-1.821255978+t*1.330274429))));
+  return x>=0?1-npdf(x,0,1)*p:npdf(x,0,1)*p;
+}
+// F-dist p-value via regularized incomplete beta (approximation)
+function fPval(F,d1,d2){
+  if(!isFinite(F)||F<=0) return 1;
+  const x=d2/(d2+d1*F);
+  return ibeta(x,d2/2,d1/2);
+}
+function ibeta(x,a,b){
+  if(x<=0) return 0; if(x>=1) return 1;
+  const lbeta=lgamma(a)+lgamma(b)-lgamma(a+b);
+  const bt=Math.exp(Math.log(x)*a+Math.log(1-x)*b-lbeta);
+  return x<(a+1)/(a+b+2)?bt*betacf(x,a,b)/a:1-bt*betacf(1-x,b,a)/b;
+}
+function betacf(x,a,b){
+  let qab=a+b,qap=a+1,qam=a-1,c=1,d=1-qab*x/qap;
+  if(Math.abs(d)<1e-30)d=1e-30; d=1/d; let h=d;
+  for(let m=1;m<=100;m++){
+    const m2=2*m;
+    let aa=m*(b-m)*x/((qam+m2)*(a+m2));
+    d=1+aa*d; if(Math.abs(d)<1e-30)d=1e-30; c=1+aa/c; if(Math.abs(c)<1e-30)c=1e-30;
+    d=1/d; h*=d*c;
+    aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
+    d=1+aa*d; if(Math.abs(d)<1e-30)d=1e-30; c=1+aa/c; if(Math.abs(c)<1e-30)c=1e-30;
+    d=1/d; const del=d*c; h*=del;
+    if(Math.abs(del-1)<1e-10) break;
+  }
+  return h;
+}
+function lgamma(z){
+  const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,.1208650973866179e-2,-.5395239384953e-5];
+  let y=z,x=z,tmp=x+5.5;
+  tmp-=(x+.5)*Math.log(tmp); let ser=1.000000000190015;
+  for(const ci of c){ser+=ci/++y;}
+  return -tmp+Math.log(2.5066282746310005*ser/x);
+}
+function chiPval(x,df){return 1-ibeta(x/(x+df),df/2,.5);}  // Actually use: 1 - regularized gamma
+// simpler chi2 cdf via normal approx for display
+function chi2Pval(chi2,df){
+  if(chi2<=0) return 1;
+  const z=((chi2/df)**(1/3)-(1-2/(9*df)))/Math.sqrt(2/(9*df));
+  return 1-ncdf(z);
+}
+
+// ══════════════════════════════════════════════════════
+// LAB DATA
+// ══════════════════════════════════════════════════════
+const LABS=[
+  {id:'L1',name:'p-value & การแจกแจงตัวอย่าง',short:'Lab 1',tag:'#1d4ed8',tagBg:'#eff6ff',
+   steps:['แนวคิด','Simulator','Python','Quiz'],content:[L1con,L1sim,L1py,L1quiz]},
+  {id:'L2',name:'z-test & t-test',short:'Lab 2',tag:'#0f766e',tagBg:'#f0fdf9',
+   steps:['แนวคิด','เครื่องคำนวณ','Python','Quiz'],content:[L2con,L2calc,L2py,L2quiz]},
+  {id:'L3',name:'ANOVA & F-test',short:'Lab 3',tag:'#92400e',tagBg:'#fffbeb',
+   steps:['แนวคิด','Playground','Python','Quiz'],content:[L3con,L3play,L3py,L3quiz]},
+  {id:'L4',name:'Linear Regression',short:'Lab 4',tag:'#c2410c',tagBg:'#fff7ed',
+   steps:['แนวคิด','Scatter Lab','Python','Quiz'],content:[L4con,L4play,L4py,L4quiz]},
+  {id:'L5',name:'Chi-Square',short:'Lab 5',tag:'#5b21b6',tagBg:'#f5f3ff',
+   steps:['แนวคิด','ตาราง','Python','Quiz'],content:[L5con,L5play,L5py,L5quiz]},
+  {id:'L6',name:'Power & ความคลาดเคลื่อน',short:'Lab 6',tag:'#14532d',tagBg:'#f0fdf4',
+   steps:['แนวคิด','Visualizer','Python','Quiz'],content:[L6con,L6play,L6py,L6quiz]},
+];
+let cLab=0,cStep=0;
+const visited=Array.from({length:6},()=>new Set());
+const QS={};
+
+// ══════════════════════════════════════════════════════
+// LAB 1
+// ══════════════════════════════════════════════════════
+function L1con(){return `
+<h1>การแจกแจงตัวอย่างและ p-value</h1>
+<p class="sub">LAB 1 — SAMPLING DISTRIBUTION & HYPOTHESIS TESTING LOGIC</p>
+
+<p>ก่อนทำ Hypothesis Testing ทุกประเภท ต้องเข้าใจคำถามพื้นฐานก่อน:<br>
+<strong>"ถ้าสมมติฐานว่าง (H₀) เป็นจริง โอกาสที่จะได้ผลลัพธ์แบบนี้คือเท่าไร?"</strong></p>
+
+<h2>ตรรกะการทดสอบสมมติฐาน</h2>
+<div class="box amber">
+<div class="box-title">⚠️ เราต้องการ "ปฏิเสธ" H₀ — ไม่ใช่ "ยอมรับ"</div>
+ผลลัพธ์มีแค่ 2 แบบ: <strong>Reject H₀</strong> หรือ <strong>Fail to Reject H₀</strong><br>
+การ "Fail to Reject" ≠ H₀ เป็นจริง — แค่ไม่มีหลักฐานพอที่จะปฏิเสธ<br>
+เปรียบเทียบ: ศาลตัดสิน "ไม่มีความผิด" ≠ บริสุทธิ์จริง แต่หลักฐานไม่พอ
+</div>
+
+<h2>p-value คืออะไร</h2>
+<div class="fcard">
+  <div class="fcard-title">นิยาม p-value</div>
+  <div class="frow"><span class="flabel">p-value =</span><span class="fval">P(ได้ค่าสถิติ <span class="hl">≥</span> ค่าที่สังเกต <span class="hl">|</span> H₀ เป็นจริง)</span></div>
+  <div class="frow"><span class="flabel">ถ้า p &lt; α</span><span class="fval"><span class="hl2">Reject H₀</span></span><span class="fdesc">มีนัยสำคัญทางสถิติ</span></div>
+  <div class="frow"><span class="flabel">ถ้า p ≥ α</span><span class="fval"><span class="hl3">Fail to Reject H₀</span></span><span class="fdesc">ไม่มีหลักฐานพอ</span></div>
+  <div class="frow"><span class="flabel">SE = σ/√n</span><span class="fval">Standard Error ของ x̄</span><span class="fdesc">ลดลงเมื่อ n เพิ่ม</span></div>
+</div>
+
+<h2>สิ่งที่ p-value ไม่ได้หมายความ</h2>
+<table class="ctbl">
+<thead><tr><th>ความเข้าใจผิด</th><th>ความหมายที่ถูกต้อง</th></tr></thead>
+<tbody>
+<tr><td>p = 0.03 → H₀ มีโอกาสเป็นจริง 3%</td><td class="y">ไม่ถูก — p-value ไม่ใช่ความน่าจะเป็นของ H₀</td></tr>
+<tr><td>p = 0.03 → H₁ มีโอกาสเป็นจริง 97%</td><td class="y">ไม่ถูก — p-value บอกอะไรเกี่ยวกับ H₁ โดยตรงไม่ได้</td></tr>
+<tr><td>p = 0.06 → ไม่มีผลเลย</td><td class="y">ไม่ถูก — มีแนวโน้ม แต่หลักฐานยังไม่พอที่ α = 0.05</td></tr>
+<tr><td>p &lt; 0.05 → ผลมีความสำคัญในทางปฏิบัติ</td><td class="y">ไม่จำเป็น — นัยสำคัญทางสถิติ ≠ ความสำคัญเชิงปฏิบัติ</td></tr>
+</tbody>
+</table>
+
+<h2>ขั้นตอนการทดสอบสมมติฐาน</h2>
+<div class="steps">
+  <div class="step"><div class="sn">1</div><div class="sb"><h4>ตั้งสมมติฐาน (ก่อนดูข้อมูล)</h4><p>H₀: สมมติฐานว่าง (null) — สิ่งที่ต้องการหลักฐานต่อต้าน<br>H₁: สมมติฐานทางเลือก — สิ่งที่ต้องการแสดง</p></div></div>
+  <div class="step"><div class="sn">2</div><div class="sb"><h4>เลือก α (ระดับนัยสำคัญ)</h4><p>α = 0.05 (พบบ่อยที่สุด) หรือ 0.01 (เข้มงวดกว่า) — โอกาส Type I Error ที่ยอมรับได้</p></div></div>
+  <div class="step"><div class="sn">3</div><div class="sb"><h4>คำนวณค่าสถิติและ p-value</h4><p>z = (x̄ − μ₀) / SE &nbsp;|&nbsp; SE = σ/√n &nbsp;|&nbsp; หา p-value จากการแจกแจงมาตรฐาน</p></div></div>
+  <div class="step"><div class="sn">4</div><div class="sb"><h4>ตัดสินใจและสรุปผล</h4><p>ถ้า p &lt; α → Reject H₀ &nbsp;|&nbsp; รายงานผลเสมอพร้อม effect size ไม่ใช่แค่ p-value</p></div></div>
+</div>
+<div class="navbtns"><button onclick="gS(1)">ต่อไป: Simulator →</button></div>`;}
+
+function L1sim(){return `
+<h1>Sampling Distribution Simulator</h1>
+<p class="sub">ปรับค่าแล้วดูว่าการแจกแจงของ x̄ และ p-value เปลี่ยนอย่างไร</p>
+<div class="vc">
+  <div class="vt">⚙ ปรับพารามิเตอร์</div>
+  <div class="ctrls">
+    <div class="cg"><div class="cl">μ₀ (H₀) = <span class="cv" id="v-mu0">50</span></div><input type="range" id="s-mu0" min="40" max="60" value="50" oninput="l1up()"></div>
+    <div class="cg"><div class="cl">x̄ สังเกต = <span class="cv" id="v-xb">53</span></div><input type="range" id="s-xb" min="44" max="58" value="53" oninput="l1up()"></div>
+    <div class="cg"><div class="cl">σ = <span class="cv" id="v-sg">10</span></div><input type="range" id="s-sg" min="3" max="20" value="10" oninput="l1up()"></div>
+    <div class="cg"><div class="cl">n = <span class="cv" id="v-n">25</span></div><input type="range" id="s-n" min="5" max="100" value="25" oninput="l1up()"></div>
+    <div class="cg"><div class="cl">α</div><select id="s-a" onchange="l1up()"><option value="0.05" selected>0.05</option><option value="0.01">0.01</option><option value="0.10">0.10</option></select></div>
+    <div class="cg"><div class="cl">การทดสอบ</div><select id="s-t" onchange="l1up()"><option value="two" selected>สองหาง</option><option value="right">หางขวา</option><option value="left">หางซ้าย</option></select></div>
+  </div>
+  <canvas id="c-l1" width="760" height="230" style="width:100%;"></canvas>
+  <div id="r-l1" class="rbox" style="margin-top:.7rem;"></div>
+</div>
+<div class="box teal"><div class="box-title">💡 สังเกตสิ่งเหล่านี้</div>
+<b>ขยับ x̄ ออกจาก μ₀</b> → p-value ลดลง (evidence ต่อต้าน H₀ มากขึ้น)<br>
+<b>เพิ่ม n</b> → SE = σ/√n แคบลง → การแจกแจงแคบ → p-value ลด แม้ x̄ ไม่เปลี่ยน<br>
+<b>เพิ่ม σ</b> → SE ใหญ่ขึ้น → การแจกแจงกว้าง → p-value เพิ่ม
+</div>
+<div class="navbtns"><button class="sec" onclick="gS(0)">← กลับ</button><button onclick="gS(2)">ต่อไป: Python →</button></div>`;}
+
+function L1py(){return `
+<h1>Python — คำนวณ p-value</h1>
+<p class="sub">ฟังก์ชันสำหรับคำนวณและแปลความหมาย p-value</p>
+<div class="pyblock"><div class="pyhead"><span class="pylang">python</span></div><div class="pybody"><pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> scipy <span class="kw">import</span> stats
+
+<span class="cm"># ═══ พารามิเตอร์ ═══</span>
+mu0   = <span class="nm">50</span>       <span class="cm"># ค่าเฉลี่ยภายใต้ H₀</span>
+x_bar = <span class="nm">53</span>       <span class="cm"># ค่าเฉลี่ยตัวอย่างที่สังเกต</span>
+sigma = <span class="nm">10</span>       <span class="cm"># ส่วนเบี่ยงเบนมาตรฐานประชากร</span>
+n     = <span class="nm">25</span>       <span class="cm"># ขนาดตัวอย่าง</span>
+alpha = <span class="nm">0.05</span>     <span class="cm"># ระดับนัยสำคัญ</span>
+
+<span class="cm"># ═══ คำนวณ ═══</span>
+SE = sigma / np.<span class="fn">sqrt</span>(n)          <span class="cm"># Standard Error</span>
+z  = (x_bar - mu0) / SE           <span class="cm"># z statistic</span>
+
+<span class="cm"># p-value แต่ละแบบ</span>
+p_two   = <span class="nm">2</span> * (<span class="nm">1</span> - stats.norm.<span class="fn">cdf</span>(np.<span class="fn">abs</span>(z)))  <span class="cm"># สองหาง</span>
+p_right = <span class="nm">1</span> - stats.norm.<span class="fn">cdf</span>(z)               <span class="cm"># หางขวา</span>
+p_left  = stats.norm.<span class="fn">cdf</span>(z)                    <span class="cm"># หางซ้าย</span>
+
+<span class="cm"># ═══ แสดงผล ═══</span>
+<span class="fn">print</span>(<span class="st">f"SE = {SE:.4f}"</span>)
+<span class="fn">print</span>(<span class="st">f"z  = {z:.4f}"</span>)
+<span class="fn">print</span>(<span class="st">f"p-value (สองหาง) = {p_two:.4f}"</span>)
+<span class="fn">print</span>(<span class="st">f"ผล: {'Reject H₀' if p_two &lt; alpha else 'Fail to Reject H₀'}"</span>)
+</pre></div></div>
+<div class="box blue"><div class="box-title">📌 ผลลัพธ์ที่คาดหวัง</div>
+SE = 2.0000 &nbsp;|&nbsp; z = 1.5000 &nbsp;|&nbsp; p = 0.1336<br>
+→ Fail to Reject H₀ ที่ α = 0.05 (แต่ถ้า x̄ = 55 → z = 2.5 → p = 0.012 → Reject)
+</div>
+<div class="navbtns"><button class="sec" onclick="gS(1)">← กลับ</button><button onclick="gS(3)">ต่อไป: Quiz →</button></div>`;}
+
+function L1quiz(){return `
+<h1>Quiz — Lab 1</h1><p class="sub">p-value และการแจกแจงตัวอย่าง (6 ข้อ)</p>
+${Q('q1a','1. p-value = 0.03 ที่ α = 0.05 ควรสรุปอย่างไร?',['ปฏิเสธ H₀ — p &lt; α มีนัยสำคัญทางสถิติ','ยอมรับ H₀ เพราะค่า p น้อย','ยังสรุปไม่ได้ ต้องหาค่า t ก่อน','ปฏิเสธ H₁ เพราะ p &lt; α'],'a','✅ ถูก! p = 0.03 &lt; α = 0.05 → Reject H₀')}
+${Q('q1b','2. p-value = 0.03 หมายความว่าอะไรที่ถูกต้องที่สุด?',['H₀ มีโอกาสเป็นจริง 3%','H₁ มีโอกาสเป็นจริง 97%','ถ้า H₀ เป็นจริง โอกาสได้ผลลัพธ์ที่สุดโต่งเท่านี้หรือมากกว่าคือ 3%','มีความผิดพลาดในข้อมูล 3%'],'c','✅ ถูก! p-value คือ P(data | H₀) ไม่ใช่ P(H₀ | data)')}
+${Q('q1c','3. n เพิ่มขึ้น SE = σ/√n จะเป็นอย่างไร และส่งผลต่อ p-value อย่างไร?',['SE เพิ่ม → p-value เพิ่ม','SE ลด → p-value ลด (test มี power มากขึ้น)','SE ไม่เปลี่ยน — n ไม่ส่งผลต่อ SE','SE ลด → p-value เพิ่ม'],'b','✅ ถูก! SE = σ/√n ลดเมื่อ n เพิ่ม → z สูงขึ้น → p-value ลด')}
+${Q('q1c2','4. "Fail to Reject H₀" หมายความว่าอะไรที่ถูกที่สุด?',['H₀ เป็นจริง 100%','ยาหรือวิธีการที่ทดสอบไม่มีผลเลย','หลักฐานยังไม่เพียงพอที่จะปฏิเสธ H₀ ที่ระดับ α นี้','ต้องทำการทดลองใหม่'],'c','✅ ถูก! Fail to Reject ≠ ยอมรับ H₀ — แค่หลักฐานไม่พอ')}
+${Q('q1c3','5. ข้อใดต่อไปนี้จะทำให้ p-value ลดลง (เข้าใกล้ 0)?',['ลด n และเพิ่ม σ','เพิ่ม n และให้ x̄ ห่างจาก μ₀ มากขึ้น','ลด α จาก 0.05 เป็น 0.01','เปลี่ยนจากสองหางเป็นสองหาง'],'b','✅ ถูก! n ↑ → SE ↓ → z ↑; x̄ ห่าง μ₀ → z ↑; ทั้งสองทำให้ p ↓')}
+${Q('q1c4','6. ทำไมจึงไม่ควรพูดว่า "ยอมรับ H₀" แต่ควรพูดว่า "Fail to Reject H₀"?',['เพราะเป็นศัพท์ทางสถิติสากล','เพราะข้อมูลมีจำกัด จึงพิสูจน์ไม่ได้ว่า H₀ เป็นจริง — แค่ไม่มีหลักฐานพอที่จะปฏิเสธ','เพราะ H₀ อาจผิดหรือถูกก็ได้ขึ้นอยู่กับ α','เพราะต้องรอผล post-hoc test ก่อน'],'b','✅ ถูก! นี่คือ asymmetry ของ hypothesis testing — เราพิสูจน์ความเป็นเท็จได้ง่ายกว่าพิสูจน์ความเป็นจริง')}
+<div class="score-disp" id="score-L1"></div>
+<div class="navbtns"><button class="sec" onclick="gS(2)">← กลับ</button><button onclick="gL(1)">ไปที่ Lab 2 →</button></div>`;}
+
+// ══════════════════════════════════════════════════════
+// LAB 2
+// ══════════════════════════════════════════════════════
+function L2con(){return `
+<h1>z-test และ t-test</h1>
+<p class="sub">LAB 2 — ONE-SAMPLE & TWO-SAMPLE HYPOTHESIS TESTS</p>
+<h2>เมื่อไรใช้อะไร</h2>
+<table class="ctbl">
+<thead><tr><th>สถานการณ์</th><th>ใช้ test ใด</th><th>เหตุผล</th></tr></thead>
+<tbody>
+<tr><td>รู้ σ ประชากร</td><td class="y">z-test</td><td>ใช้ standard normal distribution</td></tr>
+<tr><td>ไม่รู้ σ และ n ≥ 30</td><td class="y">z-test (approximate)</td><td>CLT ทำให้ประมาณ z ได้</td></tr>
+<tr><td>ไม่รู้ σ และ n &lt; 30</td><td class="y">t-test (df = n−1)</td><td>t-distribution มีหางหนักกว่า z</td></tr>
+<tr><td>เปรียบเทียบ 2 กลุ่มอิสระ</td><td class="y">Two-sample t-test</td><td>df ≈ n₁+n₂−2</td></tr>
+<tr><td>วัดซ้ำ 2 ครั้ง (before/after)</td><td class="y">Paired t-test</td><td>ใช้ d = x₁−x₂ ต่อคน</td></tr>
+</tbody>
+</table>
+<h2>สูตรสำคัญ</h2>
+<div class="fcard">
+  <div class="fcard-title">z-test และ t-test</div>
+  <div class="frow"><span class="flabel">z (one-sample)</span><span class="fval"><span class="hl">z = (x̄ − μ₀) / (σ/√n)</span></span><span class="fdesc">ใช้เมื่อรู้ σ</span></div>
+  <div class="frow"><span class="flabel">t (one-sample)</span><span class="fval"><span class="hl2">t = (x̄ − μ₀) / (s/√n)</span></span><span class="fdesc">df = n − 1</span></div>
+  <div class="frow"><span class="flabel">t (two-sample)</span><span class="fval"><span class="hl3">t = (x̄₁−x̄₂) / √(s₁²/n₁ + s₂²/n₂)</span></span><span class="fdesc">df ≈ n₁+n₂−2</span></div>
+  <div class="frow"><span class="flabel">t (paired)</span><span class="fval">t = d̄ / (sd/√n)</span><span class="fdesc">d = ความแตกต่างแต่ละคู่</span></div>
+  <div class="frow"><span class="flabel">Reject H₀ เมื่อ</span><span class="fval">|t| &gt; t* &nbsp;หรือ&nbsp; p &lt; α</span><span class="fdesc">ค่า t* จากตาราง t ที่ df และ α</span></div>
+</div>
+<h2>ตารางค่าวิกฤต z* ที่ใช้บ่อย</h2>
+<table class="ctbl">
+<thead><tr><th>α</th><th>สองหาง z*</th><th>หางขวา z*</th><th>หางซ้าย z*</th></tr></thead>
+<tbody>
+<tr><td>0.10</td><td>±1.645</td><td>1.282</td><td>−1.282</td></tr>
+<tr><td>0.05</td><td>±1.960</td><td>1.645</td><td>−1.645</td></tr>
+<tr><td>0.01</td><td>±2.576</td><td>2.326</td><td>−2.326</td></tr>
+</tbody>
+</table>
+<div class="navbtns"><button onclick="gS(1)">ต่อไป: เครื่องคำนวณ →</button></div>`;}
+
+function L2calc(){return `
+<h1>เครื่องคำนวณ z/t-test</h1>
+<p class="sub">กรอกค่า → ดูผลและกราฟ distribution</p>
+<div class="vc">
+  <div class="vt">⚙ ตั้งค่า</div>
+  <div class="ctrls">
+    <div class="cg"><div class="cl">ชนิด test</div><select id="l2tt" onchange="l2up()"><option value="z">z-test</option><option value="t" selected>t-test</option></select></div>
+    <div class="cg"><div class="cl">การทดสอบ</div><select id="l2tl" onchange="l2up()"><option value="two" selected>สองหาง</option><option value="right">หางขวา</option><option value="left">หางซ้าย</option></select></div>
+    <div class="cg"><div class="cl">α</div><select id="l2al" onchange="l2up()"><option value="0.05" selected>0.05</option><option value="0.01">0.01</option><option value="0.10">0.10</option></select></div>
+  </div>
+  <div class="ctrls">
+    <div class="cg"><div class="cl">x̄</div><input type="number" id="l2xb" value="52.5" step="0.1" oninput="l2up()"></div>
+    <div class="cg"><div class="cl">μ₀</div><input type="number" id="l2mu" value="50" step="0.1" oninput="l2up()"></div>
+    <div class="cg"><div class="cl">s หรือ σ</div><input type="number" id="l2sd" value="8" step="0.1" oninput="l2up()"></div>
+    <div class="cg"><div class="cl">n</div><input type="number" id="l2n" value="20" step="1" min="2" oninput="l2up()"></div>
+  </div>
+  <canvas id="c-l2" width="760" height="190" style="width:100%;"></canvas>
+  <div id="r-l2" class="rbox" style="margin-top:.7rem;"></div>
+</div>
+<div class="navbtns"><button class="sec" onclick="gS(0)">← กลับ</button><button onclick="gS(2)">ต่อไป: Python →</button></div>`;}
+
+function L2py(){return `
+<h1>Python — z-test และ t-test</h1>
+<p class="sub">ใช้ scipy.stats เพื่อคำนวณและทดสอบ</p>
+<div class="pyblock"><div class="pyhead"><span class="pylang">python</span></div><div class="pybody"><pre><span class="kw">from</span> scipy <span class="kw">import</span> stats
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># ─── One-sample t-test ───────────────────────────</span>
+data   = np.<span class="fn">array</span>([<span class="nm">52</span>, <span class="nm">54</span>, <span class="nm">50</span>, <span class="nm">53</span>, <span class="nm">55</span>, <span class="nm">51</span>, <span class="nm">56</span>, <span class="nm">49</span>, <span class="nm">52</span>, <span class="nm">53</span>])
+mu0    = <span class="nm">50</span>          <span class="cm"># ค่าเฉลี่ยภายใต้ H₀</span>
+
+t_stat, p_two = stats.<span class="fn">ttest_1samp</span>(data, mu0)
+<span class="fn">print</span>(<span class="st">f"x̄ = {data.mean():.2f}, s = {data.std(ddof=1):.2f}"</span>)
+<span class="fn">print</span>(<span class="st">f"t  = {t_stat:.4f}"</span>)
+<span class="fn">print</span>(<span class="st">f"p  = {p_two:.4f} (สองหาง)"</span>)
+<span class="fn">print</span>(<span class="st">f"df = {len(data)-1}"</span>)
+
+<span class="cm"># ─── Two-sample t-test ───────────────────────────</span>
+g1 = np.<span class="fn">array</span>([<span class="nm">78</span>, <span class="nm">82</span>, <span class="nm">80</span>, <span class="nm">85</span>, <span class="nm">79</span>])
+g2 = np.<span class="fn">array</span>([<span class="nm">70</span>, <span class="nm">74</span>, <span class="nm">72</span>, <span class="nm">76</span>, <span class="nm">71</span>])
+
+t2, p2 = stats.<span class="fn">ttest_ind</span>(g1, g2)
+<span class="fn">print</span>(<span class="st">f"\nTwo-sample: t = {t2:.4f}, p = {p2:.4f}"</span>)
+
+<span class="cm"># ─── Paired t-test ───────────────────────────────</span>
+before = np.<span class="fn">array</span>([<span class="nm">85</span>, <span class="nm">90</span>, <span class="nm">88</span>, <span class="nm">92</span>, <span class="nm">87</span>])
+after  = np.<span class="fn">array</span>([<span class="nm">88</span>, <span class="nm">94</span>, <span class="nm">90</span>, <span class="nm">95</span>, <span class="nm">91</span>])
+
+tp, pp = stats.<span class="fn">ttest_rel</span>(before, after)
+<span class="fn">print</span>(<span class="st">f"\nPaired: t = {tp:.4f}, p = {pp:.4f}"</span>)
+<span class="fn">print</span>(<span class="st">f"ค่าเฉลี่ยผลต่าง d̄ = {(before-after).mean():.2f}"</span>)
+</pre></div></div>
+<div class="navbtns"><button class="sec" onclick="gS(1)">← กลับ</button><button onclick="gS(3)">ต่อไป: Quiz →</button></div>`;}
+
+function L2quiz(){return `
+<h1>Quiz — Lab 2</h1><p class="sub">z-test และ t-test (6 ข้อ)</p>
+${Q('q2a','1. สุ่มตัวอย่าง n=16 จากประชากร ได้ x̄=495, s=10 ต้องการทดสอบว่าค่าเฉลี่ย ≠ 500 ควรใช้ test ใด?',['z-test เพราะรู้ค่า σ','t-test เพราะไม่รู้ σ และ n=16 &lt; 30','F-test เพราะมีหลายกลุ่ม','Chi-square test เพราะเกี่ยวกับความแปรปรวน'],'b','✅ ถูก! ไม่รู้ σ + n &lt; 30 → t-test, df = 15')}
+${Q('q2b','2. จากข้อ 1: t statistic = ?<br><small>x̄=495, μ₀=500, s=10, n=16</small>',['t = −2.00','t = −0.50','t = −5.00','t = 2.00'],'a','✅ ถูก! SE = 10/√16 = 2.5; t = (495−500)/2.5 = −2.00')}
+${Q('q2c','3. ที่ α=0.05 สองหาง df=15 ค่าวิกฤต t*≈2.131 ควรสรุปว่า?',['Reject H₀ เพราะ |t|=2.00 &gt; 2.131','Fail to Reject H₀ เพราะ |t|=2.00 &lt; 2.131','Reject H₀ เพราะ t เป็นลบ','ต้องใช้ z-test จึงสรุปไม่ได้'],'b','✅ ถูก! |t|=2.00 &lt; t*=2.131 → Fail to Reject H₀ ที่ α=0.05')}
+${Q('q2d','4. การเพิ่ม df (degrees of freedom) ของ t-distribution ส่งผลอย่างไร?',['t-distribution มีหางหนักขึ้น เข้าใกล้ z-distribution น้อยลง','t-distribution มีหางเบาลง และเข้าใกล้ standard normal distribution','df ไม่มีผลต่อรูปร่าง t-distribution','ค่า t* เพิ่มขึ้นเมื่อ df เพิ่ม'],'b','✅ ถูก! df → ∞ ทำให้ t → z; ที่ df=30 t≈z แล้ว')}
+${Q('q2e','5. Paired t-test ต่างจาก Two-sample t-test อย่างไร?',['Paired ใช้กับข้อมูลอิสระ Two-sample ใช้กับข้อมูลที่สัมพันธ์กัน','Paired คำนวณ d=x₁−x₂ ก่อน แล้วทำ one-sample t-test บน d โดย df=n−1','Paired ใช้ n₁+n₂−2 เป็น df','ไม่มีความแตกต่าง'],'b','✅ ถูก! Paired ลด variability โดยใช้ความแตกต่างภายในคู่ ทำให้มี power สูงกว่า')}
+${Q('q2f','6. ผล t-test: t=3.2, df=18, p=0.005 ที่ α=0.05 — ข้อใดสรุปถูกต้อง?',['Fail to Reject H₀ เพราะ t มากกว่า 3','Reject H₀ — มีหลักฐานทางสถิติว่าค่าเฉลี่ยต่างจาก μ₀ ที่ α=0.05','p=0.005 แปลว่า H₀ มีโอกาสถูก 0.5%','ต้องเปลี่ยนเป็น z-test เพราะ df น้อย'],'b','✅ ถูก! p=0.005 &lt; α=0.05 → Reject H₀; p บอก evidence ไม่บอกความน่าจะเป็นของ H₀')}
+<div class="score-disp" id="score-L2"></div>
+<div class="navbtns"><button class="sec" onclick="gS(2)">← กลับ</button><button onclick="gL(2)">ไปที่ Lab 3 →</button></div>`;}
+
+// ══════════════════════════════════════════════════════
+// LAB 3
+// ══════════════════════════════════════════════════════
+function L3con(){return `
+<h1>One-Way ANOVA และ F-test</h1>
+<p class="sub">LAB 3 — ANALYSIS OF VARIANCE</p>
+<p>ANOVA ใช้เปรียบเทียบค่าเฉลี่ย <strong>3 กลุ่มขึ้นไป</strong> พร้อมกัน ควบคุม Type I error ไว้ที่ α</p>
+<div class="box amber"><div class="box-title">⚠️ ทำไมไม่ทำ t-test หลายๆ ครั้ง?</div>
+ถ้ามี 3 กลุ่ม ต้องทำ 3 คู่: โอกาสผิดพลาด = 1−(0.95)³ ≈ <strong>14%</strong> ซึ่งสูงกว่า α=5% มาก<br>
+ANOVA รวมไว้ครั้งเดียว → ควบคุม Type I error ที่ α พอดี
+</div>
+<h2>การแยกความแปรปรวน (Variance Decomposition)</h2>
+<div class="fcard">
+  <div class="fcard-title">สูตร ANOVA</div>
+  <div class="frow"><span class="flabel">SST = SSB + SSW</span><span class="fval">Total = Between + Within</span></div>
+  <div class="frow"><span class="flabel">SSB</span><span class="fval">= Σ nᵢ(x̄ᵢ − x̄̄)²</span><span class="fdesc">ความแตกต่างระหว่างกลุ่ม</span></div>
+  <div class="frow"><span class="flabel">SSW</span><span class="fval">= Σ Σ (xᵢⱼ − x̄ᵢ)²</span><span class="fdesc">ความผันแปรภายในกลุ่ม (error)</span></div>
+  <div class="frow"><span class="flabel">MSB = SSB / (k−1)</span><span class="fval"><span class="hl">df₁ = k − 1</span></span><span class="fdesc">k = จำนวนกลุ่ม</span></div>
+  <div class="frow"><span class="flabel">MSW = SSW / (N−k)</span><span class="fval"><span class="hl2">df₂ = N − k</span></span><span class="fdesc">N = จำนวนตัวอย่างทั้งหมด</span></div>
+  <div class="frow"><span class="flabel">F = MSB / MSW</span><span class="fval"><span class="hl3">F ใหญ่ → Reject H₀</span></span><span class="fdesc">F ~ F(df₁, df₂)</span></div>
+</div>
+<h2>ANOVA Table</h2>
+<table class="ctbl">
+<thead><tr><th>แหล่ง</th><th>SS</th><th>df</th><th>MS = SS/df</th><th>F</th></tr></thead>
+<tbody>
+<tr><td>ระหว่างกลุ่ม (Between)</td><td>SSB</td><td>k−1</td><td>MSB</td><td>MSB/MSW</td></tr>
+<tr><td>ภายในกลุ่ม (Within/Error)</td><td>SSW</td><td>N−k</td><td>MSW</td><td>—</td></tr>
+<tr><td><strong>รวม (Total)</strong></td><td>SST</td><td>N−1</td><td>—</td><td>—</td></tr>
+</tbody>
+</table>
+<div class="box teal"><div class="box-title">สมมติฐาน ANOVA</div>
+H₀: μ₁ = μ₂ = ... = μk &nbsp;|&nbsp; H₁: มีอย่างน้อยหนึ่งคู่ที่ μᵢ ≠ μⱼ<br>
+ถ้า Reject H₀ → ต้องทำ <strong>Post-hoc test</strong> (Tukey, Bonferroni) เพื่อระบุคู่ที่ต่างกัน
+</div>
+<div class="navbtns"><button onclick="gS(1)">ต่อไป: Playground →</button></div>`;}
+
+function L3play(){return `
+<h1>ANOVA Playground</h1>
+<p class="sub">ปรับค่าเฉลี่ยกลุ่ม → ดู F-ratio และ ANOVA table เปลี่ยน</p>
+<div class="vc">
+  <div class="vt">🎚 ปรับกลุ่มทั้ง 3</div>
+  <div class="ctrls">
+    <div class="cg"><div class="cl">μ₁ = <span class="cv" id="m1v">50</span></div><input type="range" id="m1" min="30" max="80" value="50" oninput="l3up()"></div>
+    <div class="cg"><div class="cl">μ₂ = <span class="cv" id="m2v">55</span></div><input type="range" id="m2" min="30" max="80" value="55" oninput="l3up()"></div>
+    <div class="cg"><div class="cl">μ₃ = <span class="cv" id="m3v">60</span></div><input type="range" id="m3" min="30" max="80" value="60" oninput="l3up()"></div>
+    <div class="cg"><div class="cl">σ ภายใน = <span class="cv" id="swv">5</span></div><input type="range" id="sw" min="1" max="20" value="5" oninput="l3up()"></div>
+    <div class="cg"><div class="cl">n ต่อกลุ่ม = <span class="cv" id="ngv">10</span></div><input type="range" id="ng" min="3" max="30" value="10" oninput="l3up()"></div>
+    <div class="cg"><div class="cl">α</div><select id="l3al" onchange="l3up()"><option value="0.05" selected>0.05</option><option value="0.01">0.01</option></select></div>
+  </div>
+  <canvas id="c-l3" width="760" height="220" style="width:100%;"></canvas>
+  <div style="overflow-x:auto;margin-top:.8rem;">
+    <table class="atbl"><thead><tr><th>แหล่งความแปรปรวน</th><th>SS</th><th>df</th><th>MS</th><th>F</th><th>p-value</th><th>ผล</th></tr></thead>
+    <tbody id="l3tb"></tbody></table>
+  </div>
+  <div id="r-l3" class="rbox" style="margin-top:.6rem;"></div>
+</div>
+<div class="box purple"><div class="box-title">💡 ลองตั้งค่านี้</div>
+<b>ทดสอบ H₀:</b> ตั้ง μ₁=μ₂=μ₃=50 → F จะเล็กมาก p ใหญ่ (Fail to Reject)<br>
+<b>ทดสอบ H₁:</b> ขยับ μ₃ เป็น 70 → F พุ่งสูง p ลดฮวบ (Reject)<br>
+<b>Effect of n:</b> ให้ μต่างกันน้อย แล้วเพิ่ม n → ดู F เพิ่มขึ้น
+</div>
+<div class="navbtns"><button class="sec" onclick="gS(0)">← กลับ</button><button onclick="gS(2)">ต่อไป: Python →</button></div>`;}
+
+function L3py(){return `
+<h1>Python — ANOVA</h1>
+<p class="sub">ใช้ scipy และ statsmodels สำหรับ ANOVA</p>
+<div class="pyblock"><div class="pyhead"><span class="pylang">python</span></div><div class="pybody"><pre><span class="kw">from</span> scipy <span class="kw">import</span> stats
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># ─── ข้อมูล 3 กลุ่ม ─────────────────────────────</span>
+g1 = np.<span class="fn">array</span>([<span class="nm">48</span>, <span class="nm">52</span>, <span class="nm">50</span>, <span class="nm">51</span>, <span class="nm">49</span>])
+g2 = np.<span class="fn">array</span>([<span class="nm">55</span>, <span class="nm">58</span>, <span class="nm">54</span>, <span class="nm">57</span>, <span class="nm">56</span>])
+g3 = np.<span class="fn">array</span>([<span class="nm">62</span>, <span class="nm">65</span>, <span class="nm">60</span>, <span class="nm">63</span>, <span class="nm">64</span>])
+
+<span class="cm"># ─── One-Way ANOVA ─────────────────────────────</span>
+F, p = stats.<span class="fn">f_oneway</span>(g1, g2, g3)
+<span class="fn">print</span>(<span class="st">f"F = {F:.4f}, p = {p:.4f}"</span>)
+<span class="fn">print</span>(<span class="st">f"ผล: {'Reject H₀' if p&lt;0.05 else 'Fail to Reject H₀'}"</span>)
+
+<span class="cm"># ─── คำนวณ ANOVA table ด้วยมือ ──────────────────</span>
+all_data = np.<span class="fn">concatenate</span>([g1, g2, g3])
+grand_mean = all_data.<span class="fn">mean</span>()
+N = <span class="fn">len</span>(all_data)
+k = <span class="nm">3</span>
+
+SSB = <span class="fn">sum</span>(<span class="fn">len</span>(g)*(g.<span class="fn">mean</span>()-grand_mean)**<span class="nm">2</span> <span class="kw">for</span> g <span class="kw">in</span> [g1,g2,g3])
+SSW = <span class="fn">sum</span>(((g - g.<span class="fn">mean</span>())**<span class="nm">2</span>).<span class="fn">sum</span>() <span class="kw">for</span> g <span class="kw">in</span> [g1,g2,g3])
+MSB = SSB / (k-<span class="nm">1</span>)
+MSW = SSW / (N-k)
+F_calc = MSB / MSW
+
+<span class="fn">print</span>(<span class="st">f"\nSSB={SSB:.2f}, SSW={SSW:.2f}"</span>)
+<span class="fn">print</span>(<span class="st">f"MSB={MSB:.2f}, MSW={MSW:.2f}, F={F_calc:.4f}"</span>)
+
+<span class="cm"># ─── Post-hoc: Tukey HSD ────────────────────────</span>
+<span class="kw">from</span> statsmodels.stats.multicomp <span class="kw">import</span> pairwise_tukeyhsd
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+data_long = np.<span class="fn">concatenate</span>([g1,g2,g3])
+labels    = [<span class="st">'G1'</span>]*<span class="nm">5</span> + [<span class="st">'G2'</span>]*<span class="nm">5</span> + [<span class="st">'G3'</span>]*<span class="nm">5</span>
+result = <span class="fn">pairwise_tukeyhsd</span>(data_long, labels, alpha=<span class="nm">0.05</span>)
+<span class="fn">print</span>(result)
+</pre></div></div>
+<div class="navbtns"><button class="sec" onclick="gS(1)">← กลับ</button><button onclick="gS(3)">ต่อไป: Quiz →</button></div>`;}
+
+function L3quiz(){return `
+<h1>Quiz — Lab 3</h1><p class="sub">ANOVA และ F-test (6 ข้อ)</p>
+${Q('q3a','1. ทำไม ANOVA ใช้ F = MSB/MSW แทนที่จะเปรียบเทียบ SSB กับ SSW โดยตรง?',['F คำนวณง่ายกว่า SS','ต้องหาร df ก่อน (MS=SS/df) เพื่อให้เปรียบเทียบได้ยุติธรรมไม่ว่าจะมีกี่กลุ่ม','SS ไม่มีหน่วย จึงต้องแปลงเป็น F','F-ratio ใช้ได้เฉพาะการแจกแจงปกติ'],'b','✅ ถูก! MS = SS/df ทำให้ค่าเป็น "ต่อ degree of freedom" ยุติธรรมในทุกสถานการณ์')}
+${Q('q3b','2. SSB=120, SSW=180, k=4 กลุ่ม, N=24 — F statistic คือเท่าไร?',['F = 2.22','F = 4.44','F = 0.67','F = 3.00'],'b','✅ ถูก! MSB=120/3=40; MSW=180/20=9; F=40/9=4.44')}
+${Q('q3c','3. ANOVA บอกว่า Reject H₀ — หมายความว่าอะไรแน่ๆ?',['ทุกคู่กลุ่มมีค่าเฉลี่ยต่างกัน','มีอย่างน้อยหนึ่งคู่ที่ค่าเฉลี่ยต่างกัน ต้องทำ Post-hoc เพื่อระบุว่าคู่ไหน','กลุ่มแรกต่างจากทุกกลุ่ม','SSB &gt; SSW เสมอ'],'b','✅ ถูก! ANOVA บอกแค่ "มีอยู่ที่ไหนสักที่" ต้องทำ Tukey/Bonferroni ระบุคู่')}
+${Q('q3d','4. ข้อสมมติ (assumptions) ที่สำคัญของ One-Way ANOVA คืออะไร?',['ข้อมูลต้องเป็น ordinal scale','Normality ในแต่ละกลุ่ม, Homogeneity of variance (Levene test), Independence ของการสังเกต','ทุกกลุ่มต้องมี n เท่ากัน','ไม่มีข้อสมมติ — ANOVA ใช้ได้กับทุกข้อมูล'],'b','✅ ถูก! 3 ข้อสมมติหลัก: Normality, Equal variance (Homoscedasticity), Independence')}
+${Q('q3e','5. F-ratio = 1.0 แปลว่าอะไร?',['Reject H₀ ทันที เพราะ F &gt; 0','MSB = MSW — ความแตกต่างระหว่างกลุ่มไม่แตกต่างจากความผันแปรภายในกลุ่ม','SSB = SST','p-value = 0.05 พอดี'],'b','✅ ถูก! F=1 หมายถึง between ≈ within → ไม่มีหลักฐานความแตกต่าง')}
+${Q('q3f','6. ถ้า F = 15.3, df₁=2, df₂=27, p=0.00003 — ข้อสรุปที่ถูกต้องคือ?',['Fail to Reject H₀ เพราะ F &gt; df','Reject H₀ — มีหลักฐานว่าค่าเฉลี่ยอย่างน้อยหนึ่งกลุ่มต่างจากกลุ่มอื่น ต้องทำ Post-hoc ต่อ','Reject H₀ — ทุกกลุ่มต่างกันหมด','ต้องดูค่า F* จากตารางก่อนจะสรุป (ไม่ดู p-value)'],'b','✅ ถูก! p=0.00003 &lt;&lt; 0.05 → Reject H₀ แต่ยังไม่รู้ว่าคู่ไหน → Post-hoc')}
+<div class="score-disp" id="score-L3"></div>
+<div class="navbtns"><button class="sec" onclick="gS(2)">← กลับ</button><button onclick="gL(3)">ไปที่ Lab 4 →</button></div>`;}
+
+// ══════════════════════════════════════════════════════
+// LAB 4
+// ══════════════════════════════════════════════════════
+function L4con(){return `
+<h1>Simple Linear Regression</h1>
+<p class="sub">LAB 4 — REGRESSION ANALYSIS</p>
+<h2>สูตรสำคัญ</h2>
+<div class="fcard">
+  <div class="fcard-title">Least Squares Regression</div>
+  <div class="frow"><span class="flabel">โมเดล</span><span class="fval">ŷ = <span class="hl">β̂₀</span> + <span class="hl2">β̂₁</span>x</span></div>
+  <div class="frow"><span class="flabel">β̂₁ (slope)</span><span class="fval">= Sxy / Sxx &nbsp;=&nbsp; Σ(xᵢ−x̄)(yᵢ−ȳ) / Σ(xᵢ−x̄)²</span></div>
+  <div class="frow"><span class="flabel">β̂₀ (intercept)</span><span class="fval">= ȳ − β̂₁ · x̄</span></div>
+  <div class="frow"><span class="flabel">SST = SSR + SSE</span><span class="fval">Total = Regression + Error</span></div>
+  <div class="frow"><span class="flabel">R²</span><span class="fval">= SSR / SST &nbsp;=&nbsp; <span class="hl2">1 − SSE/SST</span></span><span class="fdesc">0 ≤ R² ≤ 1</span></div>
+  <div class="frow"><span class="flabel">t-test บน β̂₁</span><span class="fval">t = β̂₁ / SE(β̂₁) &nbsp;df = n−2</span><span class="fdesc">H₀: β₁ = 0</span></div>
+</div>
+<h2>ตีความ R²</h2>
+<table class="ctbl">
+<thead><tr><th>R²</th><th>ความหมาย</th><th>ตัวอย่าง</th></tr></thead>
+<tbody>
+<tr><td>0.00</td><td>x ไม่อธิบาย y เลย</td><td>สุ่มล้วน</td></tr>
+<tr><td>0.50</td><td>x อธิบาย y ได้ 50%</td><td>ปานกลาง</td></tr>
+<tr><td>0.90+</td><td>x อธิบาย y ได้ &gt;90%</td><td>ดีมาก</td></tr>
+<tr><td>1.00</td><td>ทุกจุดอยู่บนเส้นพอดี</td><td>perfect fit</td></tr>
+</tbody>
+</table>
+<div class="box amber"><div class="box-title">⚠️ R² สูง ≠ causal relationship</div>
+Correlation ≠ Causation — x กับ y อาจสัมพันธ์กันเพราะมีตัวแปรที่สาม (confounding variable)<br>
+ตัวอย่าง: ยอดขายไอศครีม สัมพันธ์กับ จำนวนคนจมน้ำ (ทั้งคู่ขึ้นกับอุณหภูมิ)
+</div>
+<div class="navbtns"><button onclick="gS(1)">ต่อไป: Scatter Lab →</button></div>`;}
+
+function L4play(){return `
+<h1>Scatter Lab — Least Squares</h1>
+<p class="sub">คลิกเพิ่มจุด → เส้นถดถอยและ residuals ปรับตาม</p>
+<div class="vc">
+  <div class="vt">📍 คลิกบน canvas เพื่อเพิ่มจุด</div>
+  <div class="ctrls">
+    <button onclick="l4rst()">ล้างข้อมูล</button>
+    <button class="sec" onclick="l4smp()">ตัวอย่างข้อมูล</button>
+    <button class="sec" onclick="l4smp2()">ตัวอย่าง 2 (noise สูง)</button>
+    <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" id="showR" onchange="l4draw()" checked> Residuals</label>
+  </div>
+  <canvas id="c-l4" width="760" height="300" onclick="l4add(event)" style="cursor:crosshair;width:100%;"></canvas>
+  <div id="r-l4" class="rbox" style="margin-top:.7rem;"></div>
+  <div class="iline" id="info-l4">คลิก canvas เพื่อเพิ่มจุด (ต้องการ ≥ 3 จุด)</div>
+</div>
+<div class="box purple"><div class="box-title">💡 ทดลอง</div>
+<b>Outlier:</b> เพิ่มจุดที่ห่างมากจากเส้น → ดูว่าดึงเส้นไปมากแค่ไหน<br>
+<b>R²=1:</b> เพิ่มจุดให้อยู่บนเส้นตรงพอดี → R² = 1.000<br>
+<b>ตัวอย่าง 2:</b> เปรียบเทียบ R² เมื่อข้อมูล noisy
+</div>
+<div class="navbtns"><button class="sec" onclick="gS(0)">← กลับ</button><button onclick="gS(2)">ต่อไป: Python →</button></div>`;}
+
+function L4py(){return `
+<h1>Python — Linear Regression</h1>
+<p class="sub">ใช้ scipy.stats และ sklearn</p>
+<div class="pyblock"><div class="pyhead"><span class="pylang">python</span></div><div class="pybody"><pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> scipy <span class="kw">import</span> stats
+
+<span class="cm"># ─── ข้อมูล ─────────────────────────────────────</span>
+x = np.<span class="fn">array</span>([<span class="nm">2</span>,<span class="nm">3</span>,<span class="nm">4</span>,<span class="nm">5</span>,<span class="nm">6</span>,<span class="nm">7</span>,<span class="nm">8</span>,<span class="nm">9</span>,<span class="nm">10</span>])
+y = np.<span class="fn">array</span>([<span class="nm">4.2</span>,<span class="nm">5.8</span>,<span class="nm">7.1</span>,<span class="nm">8.0</span>,<span class="nm">9.4</span>,<span class="nm">10.9</span>,<span class="nm">11.8</span>,<span class="nm">13.2</span>,<span class="nm">14.0</span>])
+
+<span class="cm"># ─── ใช้ scipy.stats ─────────────────────────────</span>
+slope, intercept, r, p_val, se = stats.<span class="fn">linregress</span>(x, y)
+
+<span class="fn">print</span>(<span class="st">f"β̂₁ (slope)     = {slope:.4f}"</span>)
+<span class="fn">print</span>(<span class="st">f"β̂₀ (intercept) = {intercept:.4f}"</span>)
+<span class="fn">print</span>(<span class="st">f"R              = {r:.4f}"</span>)
+<span class="fn">print</span>(<span class="st">f"R²             = {r**2:.4f}"</span>)
+<span class="fn">print</span>(<span class="st">f"p-value (β₁=0) = {p_val:.6f}"</span>)
+<span class="fn">print</span>(<span class="st">f"ผล: {'มีนัยสำคัญ' if p_val&lt;0.05 else 'ไม่มีนัยสำคัญ'}"</span>)
+
+<span class="cm"># ─── คำนวณด้วยมือเพื่อทำความเข้าใจ ──────────────</span>
+x_bar, y_bar = x.<span class="fn">mean</span>(), y.<span class="fn">mean</span>()
+Sxx = np.<span class="fn">sum</span>((x - x_bar)**<span class="nm">2</span>)
+Sxy = np.<span class="fn">sum</span>((x - x_bar)*(y - y_bar))
+b1  = Sxy / Sxx
+b0  = y_bar - b1 * x_bar
+
+y_hat = b0 + b1 * x
+SST = np.<span class="fn">sum</span>((y - y_bar)**<span class="nm">2</span>)
+SSE = np.<span class="fn">sum</span>((y - y_hat)**<span class="nm">2</span>)
+SSR = SST - SSE
+R2  = SSR / SST
+
+<span class="fn">print</span>(<span class="st">f"\nSST={SST:.3f}, SSR={SSR:.3f}, SSE={SSE:.3f}, R²={R2:.4f}"</span>)
+</pre></div></div>
+<div class="navbtns"><button class="sec" onclick="gS(1)">← กลับ</button><button onclick="gS(3)">ต่อไป: Quiz →</button></div>`;}
+
+function L4quiz(){return `
+<h1>Quiz — Lab 4</h1><p class="sub">Linear Regression (6 ข้อ)</p>
+${Q('q4a','1. R² = 0.81 ตีความอย่างไร?',['ค่า slope = 0.81','ตัวแปร x อธิบายความแปรปรวนของ y ได้ 81%','81% ของจุดอยู่ใกล้เส้นถดถอย','ค่าสัมประสิทธิ์สหสัมพันธ์ r = 0.81'],'b','✅ ถูก! R² = SSR/SST คือสัดส่วน variance ของ y ที่ x อธิบายได้')}
+${Q('q4b','2. SST=200, SSE=50 — R² คือเท่าไร?',['R² = 0.25','R² = 0.50','R² = 0.75','R² = 4.00'],'c','✅ ถูก! R² = 1 − SSE/SST = 1 − 50/200 = 0.75')}
+${Q('q4c','3. t-test บน β̂₁ ได้ p=0.002 ที่ α=0.05 หมายความว่า?',['β₁ = 0 ตัวแปร x ไม่มีผล','มีหลักฐานว่า β₁ ≠ 0 — x มีผลต่อ y อย่างมีนัยสำคัญ','โมเดลทำนายผิด 0.2%','R² = 0.998'],'b','✅ ถูก! p=0.002 &lt; α=0.05 → Reject H₀: β₁=0 → x มีผลต่อ y')}
+${Q('q4d','4. ถ้า β̂₁ = 2.5 หมายความว่า?',['x เพิ่ม 1 หน่วย y ลด 2.5 หน่วย','x เพิ่ม 2.5 หน่วย y เพิ่ม 1 หน่วย','x เพิ่ม 1 หน่วย y เพิ่ม 2.5 หน่วย โดยเฉลี่ย','R² = 2.5'],'c','✅ ถูก! slope = เมื่อ x เพิ่ม 1 หน่วย ŷ เปลี่ยนแปลง β̂₁ หน่วย')}
+${Q('q4e','5. R² สูง (เช่น 0.95) แปลว่า x ทำให้เกิด y (causation) หรือไม่?',['ใช่ R² สูงพิสูจน์ causation ได้','ไม่ใช่ R² บอกความสัมพันธ์ (correlation) ไม่ใช่ causation','ใช่ เพราะ p-value &lt; 0.05 ด้วย','ขึ้นอยู่กับว่า sample size ใหญ่แค่ไหน'],'b','✅ ถูก! Correlation ≠ Causation — อาจมี confounding variable ที่ควบคุมทั้ง x และ y')}
+${Q('q4f','6. Residual = yᵢ − ŷᵢ ถ้า residuals มีรูปแบบ (pattern) ชัดเจน แปลว่า?',['โมเดลดีมาก เพราะ residuals สม่ำเสมอ','โมเดลอาจไม่เหมาะสม — อาจต้องใช้ non-linear model หรือมี heteroscedasticity','ค่า R² ต้องเป็น 1.0','ควรเพิ่ม outlier ออก'],'b','✅ ถูก! Residual pattern = โมเดล linear อาจไม่ถูก; ควรตรวจสอบ residual plot เสมอ')}
+<div class="score-disp" id="score-L4"></div>
+<div class="navbtns"><button class="sec" onclick="gS(2)">← กลับ</button><button onclick="gL(4)">ไปที่ Lab 5 →</button></div>`;}
+
+// ══════════════════════════════════════════════════════
+// LAB 5
+// ══════════════════════════════════════════════════════
+function L5con(){return `
+<h1>Chi-Square Test</h1>
+<p class="sub">LAB 5 — CATEGORICAL DATA ANALYSIS</p>
+<h2>สองแบบหลัก</h2>
+<table class="ctbl">
+<thead><tr><th>ชนิด</th><th>ใช้เมื่อ</th><th>H₀</th><th>df</th></tr></thead>
+<tbody>
+<tr><td><strong>Goodness-of-Fit</strong></td><td>ตัวแปร 1 ตัว เปรียบกับการแจกแจงที่คาดหวัง</td><td>O = E (fit กับทฤษฎี)</td><td>k − 1</td></tr>
+<tr><td><strong>Test of Independence</strong></td><td>ตัวแปร 2 ตัวใน Contingency table r×c</td><td>ตัวแปรทั้งสองไม่สัมพันธ์กัน</td><td>(r−1)(c−1)</td></tr>
+</tbody>
+</table>
+<h2>สูตร</h2>
+<div class="fcard">
+  <div class="fcard-title">Chi-Square Statistic</div>
+  <div class="frow"><span class="flabel">χ² = </span><span class="fval"><span class="hl">Σ (Oᵢ − Eᵢ)² / Eᵢ</span></span><span class="fdesc">ทุกช่องในตาราง</span></div>
+  <div class="frow"><span class="flabel">Eᵢⱼ (contingency)</span><span class="fval">= (Row total × Col total) / Grand total</span></div>
+  <div class="frow"><span class="flabel">df (GoF)</span><span class="fval">= <span class="hl2">k − 1</span></span><span class="fdesc">k = จำนวน categories</span></div>
+  <div class="frow"><span class="flabel">df (independence)</span><span class="fval">= <span class="hl3">(r−1)(c−1)</span></span><span class="fdesc">r = แถว, c = คอลัมน์</span></div>
+</div>
+<div class="box coral"><div class="box-title">⚠️ ข้อสมมติสำคัญ</div>
+Expected frequency ทุกช่องควร <strong>≥ 5</strong><br>
+ถ้า E &lt; 5 ในหลายช่อง → รวมกลุ่ม หรือใช้ <strong>Fisher's Exact Test</strong> แทน<br>
+Chi-square ใช้ได้กับข้อมูล count เท่านั้น — ห้ามใช้กับ proportion โดยตรง
+</div>
+<div class="navbtns"><button onclick="gS(1)">ต่อไป: ตาราง →</button></div>`;}
+
+function L5play(){return `
+<h1>Chi-Square Calculator</h1>
+<p class="sub">แก้ไขค่า Observed ในตาราง → ดูผลอัตโนมัติ</p>
+<div class="vc">
+  <div class="vt">📊 Contingency Table — แก้ค่าช่อง Observed ได้เลย</div>
+  <div id="chi-wrap"></div>
+  <div id="r-l5" class="rbox" style="margin-top:.8rem;"></div>
+  <canvas id="c-l5" width="500" height="140" style="width:100%;margin-top:.8rem;background:#fafaf8;border-radius:5px;"></canvas>
+  <div class="iline">สีเข้ม = ช่องที่มีส่วนต่อ χ² มาก</div>
+</div>
+<div class="navbtns"><button class="sec" onclick="gS(0)">← กลับ</button><button onclick="gS(2)">ต่อไป: Python →</button></div>`;}
+
+function L5py(){return `
+<h1>Python — Chi-Square Test</h1>
+<p class="sub">ใช้ scipy.stats สำหรับทั้ง Goodness-of-Fit และ Independence test</p>
+<div class="pyblock"><div class="pyhead"><span class="pylang">python</span></div><div class="pybody"><pre><span class="kw">from</span> scipy <span class="kw">import</span> stats
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># ─── Goodness-of-Fit Test ───────────────────────</span>
+<span class="cm"># ทดสอบว่าลูกเต๋า fair หรือไม่</span>
+observed = np.<span class="fn">array</span>([<span class="nm">18</span>, <span class="nm">22</span>, <span class="nm">15</span>, <span class="nm">25</span>, <span class="nm">17</span>, <span class="nm">23</span>])
+expected = np.<span class="fn">array</span>([<span class="nm">20</span>, <span class="nm">20</span>, <span class="nm">20</span>, <span class="nm">20</span>, <span class="nm">20</span>, <span class="nm">20</span>])   <span class="cm"># uniform</span>
+
+chi2, p = stats.<span class="fn">chisquare</span>(observed, f_exp=expected)
+<span class="fn">print</span>(<span class="st">f"GoF: χ² = {chi2:.4f}, p = {p:.4f}, df = {len(observed)-1}"</span>)
+<span class="fn">print</span>(<span class="st">f"ผล: {'Reject H₀ — ไม่ fair' if p&lt;0.05 else 'Fail to Reject — อาจ fair'}"</span>)
+
+<span class="cm"># ─── Test of Independence ───────────────────────</span>
+<span class="cm"># ตัวอย่าง: เพศ vs ความพอใจ (3 ระดับ)</span>
+contingency = np.<span class="fn">array</span>([
+    [<span class="nm">40</span>, <span class="nm">30</span>, <span class="nm">20</span>],   <span class="cm"># กลุ่ม A</span>
+    [<span class="nm">25</span>, <span class="nm">35</span>, <span class="nm">50</span>],   <span class="cm"># กลุ่ม B</span>
+])
+
+chi2, p, df, expected_freq = stats.<span class="fn">chi2_contingency</span>(contingency)
+<span class="fn">print</span>(<span class="st">f"\nIndependence: χ² = {chi2:.4f}, p = {p:.4f}, df = {df}"</span>)
+<span class="fn">print</span>(<span class="st">"Expected frequencies:"</span>)
+<span class="fn">print</span>(np.<span class="fn">round</span>(expected_freq, <span class="nm">2</span>))
+<span class="fn">print</span>(<span class="st">f"ผล: {'Reject H₀ — ตัวแปรสัมพันธ์กัน' if p&lt;0.05 else 'Fail to Reject — ไม่สัมพันธ์'}"</span>)
+
+<span class="cm"># ─── ตรวจ Expected ≥ 5 ──────────────────────────</span>
+<span class="fn">print</span>(<span class="st">f"\nช่องที่มี E &lt; 5: {(expected_freq &lt; 5).sum()} ช่อง"</span>)
+</pre></div></div>
+<div class="navbtns"><button class="sec" onclick="gS(1)">← กลับ</button><button onclick="gS(3)">ต่อไป: Quiz →</button></div>`;}
+
+function L5quiz(){return `
+<h1>Quiz — Lab 5</h1><p class="sub">Chi-Square Test (6 ข้อ)</p>
+${Q('q5a','1. ตาราง 3×4 — df ของ Chi-square test of independence คือ?',['df = 12','df = 6','df = 7','df = 11'],'b','✅ ถูก! df = (r−1)(c−1) = (3−1)(4−1) = 2×3 = 6')}
+${Q('q5b','2. ทำไม Expected frequency ต้องมีค่า ≥ 5?',['Chi-square distribution ถูกนิยามเฉพาะ n ≥ 5','การประมาณ χ² distribution จาก discrete data ต้องการ sample ขนาดพอในแต่ละช่อง','Observed ต้องมากกว่า 5 เสมอ','กฎข้อบังคับสถิติสากล'],'b','✅ ถูก! ถ้า E ต่ำ การประมาณ continuous χ² distribution ไม่แม่นยำ → p-value ผิดพลาด')}
+${Q('q5c','3. GoF test: O=[30,50,20], E=[33,47,20] — χ² รวม ≈ ?',['0.46','2.31','0.19','1.00'],'a','✅ ถูก! (30−33)²/33 + (50−47)²/47 + (20−20)²/20 = 0.27+0.19+0 = 0.46')}
+${Q('q5d','4. ผล chi2_contingency ให้ p=0.003 ที่ α=0.05 แปลว่า?',['ตัวแปรทั้งสองไม่สัมพันธ์กัน','Reject H₀ — มีหลักฐานว่าตัวแปรทั้งสองสัมพันธ์กัน (not independent)','Expected frequency ต่ำกว่า 5','ต้องทำ Goodness-of-Fit test แทน'],'b','✅ ถูก! p=0.003 &lt; 0.05 → Reject H₀: Independence → ตัวแปรสัมพันธ์กัน')}
+${Q('q5e','5. ข้อใดเหมาะกับ Chi-square test?',['เปรียบเทียบค่าเฉลี่ย GPA ของ 3 คณะ','ทดสอบว่าเพศกับการเลือกสาขาสัมพันธ์กันหรือไม่ (count data)','วัดว่า x ส่งผลต่อ y อย่างไร','ทดสอบว่าค่าความแปรปรวนของ 2 กลุ่มเท่ากันหรือไม่'],'b','✅ ถูก! Chi-square ใช้กับ categorical/count data เปรียบเทียบความถี่ที่สังเกตกับที่คาดหวัง')}
+${Q('q5f','6. ถ้า χ² = 0 แปลว่า?',['Reject H₀ ทันที','Observed = Expected ทุกช่อง — fit กับโมเดลที่คาดหวังพอดี','p-value = 0','ข้อมูลมีปัญหา'],'b','✅ ถูก! χ²=0 หมายถึง O=E ทุกช่อง → ข้อมูล fit กับสมมติฐาน H₀ อย่างสมบูรณ์')}
+<div class="score-disp" id="score-L5"></div>
+<div class="navbtns"><button class="sec" onclick="gS(2)">← กลับ</button><button onclick="gL(5)">ไปที่ Lab 6 →</button></div>`;}
+
+// ══════════════════════════════════════════════════════
+// LAB 6
+// ══════════════════════════════════════════════════════
+function L6con(){return `
+<h1>Power, α, β และความคลาดเคลื่อน</h1>
+<p class="sub">LAB 6 — STATISTICAL POWER & ERROR TYPES</p>
+<h2>ตารางการตัดสินใจ</h2>
+<table class="ctbl">
+<thead><tr><th></th><th>H₀ เป็นจริง</th><th>H₀ เป็นเท็จ (H₁ จริง)</th></tr></thead>
+<tbody>
+<tr><td><strong>Reject H₀</strong></td><td style="color:var(--coral);font-weight:600">Type I Error = α<br><small>False Positive</small></td><td style="color:var(--teal);font-weight:600">✓ Correct = Power = 1−β<br><small>True Positive</small></td></tr>
+<tr><td><strong>Fail to Reject H₀</strong></td><td style="color:var(--teal);font-weight:600">✓ Correct = 1−α<br><small>True Negative</small></td><td style="color:var(--amber);font-weight:600">Type II Error = β<br><small>False Negative</small></td></tr>
+</tbody>
+</table>
+<h2>สูตรสำคัญ</h2>
+<div class="fcard">
+  <div class="fcard-title">Power Analysis</div>
+  <div class="frow"><span class="flabel">Power</span><span class="fval">= 1 − β</span><span class="fdesc">โอกาสตรวจพบ effect จริง</span></div>
+  <div class="frow"><span class="flabel">ค่าวิกฤต</span><span class="fval">= μ₀ + z_α · (σ/√n)</span><span class="fdesc">one-tailed</span></div>
+  <div class="frow"><span class="flabel">β</span><span class="fval">= P(ไม่ Reject H₀ | H₁ จริง)</span><span class="fdesc">= P(x̄ &lt; crit | μ = μ₁)</span></div>
+  <div class="frow"><span class="flabel">Effect size (Cohen's d)</span><span class="fval">= |μ₁ − μ₀| / σ</span><span class="fdesc">มาตรฐาน: 0.2=เล็ก, 0.5=กลาง, 0.8=ใหญ่</span></div>
+</div>
+<h2>วิธีเพิ่ม Power</h2>
+<table class="ctbl">
+<thead><tr><th>วิธี</th><th>ผล</th><th>ความเป็นไปได้ในทางปฏิบัติ</th></tr></thead>
+<tbody>
+<tr><td>เพิ่ม n</td><td class="y">Power ↑ มากที่สุด</td><td>ทำได้ แต่ใช้ทรัพยากรมาก</td></tr>
+<tr><td>เพิ่ม α</td><td class="y">Power ↑ แต่ β ↓ด้วย</td><td>ต้อง justify ทางวิชาการ</td></tr>
+<tr><td>ลด σ</td><td class="y">Power ↑</td><td>ควบคุมการวัดให้แม่นยำขึ้น</td></tr>
+<tr><td>เพิ่ม effect size</td><td class="y">Power ↑</td><td>ส่วนมากอยู่นอกการควบคุม</td></tr>
+</tbody>
+</table>
+<div class="navbtns"><button onclick="gS(1)">ต่อไป: Visualizer →</button></div>`;}
+
+function L6play(){return `
+<h1>Power Visualizer</h1>
+<p class="sub">ดู H₀ และ H₁ distribution พร้อม α, β, Power</p>
+<div class="vc">
+  <div class="vt">⚡ ปรับค่า → ดู tradeoff</div>
+  <div class="ctrls">
+    <div class="cg"><div class="cl">Effect size = <span class="cv" id="v-es">2.0</span></div><input type="range" id="s-es" min="0" max="5" step="0.1" value="2.0" oninput="l6up()"></div>
+    <div class="cg"><div class="cl">σ = <span class="cv" id="v-s6">1.0</span></div><input type="range" id="s-s6" min="0.5" max="3" step="0.1" value="1.0" oninput="l6up()"></div>
+    <div class="cg"><div class="cl">n = <span class="cv" id="v-n6">20</span></div><input type="range" id="s-n6" min="5" max="100" step="1" value="20" oninput="l6up()"></div>
+    <div class="cg"><div class="cl">α</div><select id="s-a6" onchange="l6up()"><option value="0.01">0.01</option><option value="0.05" selected>0.05</option><option value="0.10">0.10</option></select></div>
+  </div>
+  <canvas id="c-l6" width="760" height="270" style="width:100%;"></canvas>
+  <div id="r-l6" class="rbox" style="margin-top:.7rem;"></div>
+</div>
+<div class="box teal"><div class="box-title">💡 ทดลองสังเกต</div>
+<b>Effect=0:</b> H₀ และ H₁ ทับกัน → Power = α เท่านั้น<br>
+<b>เพิ่ม n:</b> การแจกแจงแคบลงทั้งคู่ → Power เพิ่ม โดยไม่ต้องแตะ α<br>
+<b>ลด α:</b> critical value ไกลขึ้น → β เพิ่ม → Power ลด — นี่คือ tradeoff
+</div>
+<div class="navbtns"><button class="sec" onclick="gS(0)">← กลับ</button><button onclick="gS(2)">ต่อไป: Python →</button></div>`;}
+
+function L6py(){return `
+<h1>Python — Power Analysis</h1>
+<p class="sub">คำนวณ power และ sample size ที่ต้องการ</p>
+<div class="pyblock"><div class="pyhead"><span class="pylang">python</span></div><div class="pybody"><pre><span class="kw">from</span> scipy <span class="kw">import</span> stats
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># ─── คำนวณ Power โดยตรง ─────────────────────────</span>
+mu0   = <span class="nm">50</span>        <span class="cm"># H₀</span>
+mu1   = <span class="nm">52</span>        <span class="cm"># H₁ (ค่าจริง)</span>
+sigma = <span class="nm">5</span>
+n     = <span class="nm">30</span>
+alpha = <span class="nm">0.05</span>
+
+SE = sigma / np.<span class="fn">sqrt</span>(n)
+z_alpha = stats.norm.<span class="fn">ppf</span>(<span class="nm">1</span> - alpha)    <span class="cm"># one-tailed</span>
+crit = mu0 + z_alpha * SE               <span class="cm"># critical value</span>
+
+<span class="cm"># β = P(ไม่ reject | μ = mu1)</span>
+beta  = stats.norm.<span class="fn">cdf</span>(crit, loc=mu1, scale=SE)
+power = <span class="nm">1</span> - beta
+
+<span class="fn">print</span>(<span class="st">f"SE = {SE:.4f}"</span>)
+<span class="fn">print</span>(<span class="st">f"Critical value = {crit:.4f}"</span>)
+<span class="fn">print</span>(<span class="st">f"β (Type II Error) = {beta:.4f} ({beta*100:.1f}%)"</span>)
+<span class="fn">print</span>(<span class="st">f"Power = 1−β = {power:.4f} ({power*100:.1f}%)"</span>)
+
+<span class="cm"># ─── หา n ที่ต้องการให้ Power ≥ 80% ────────────</span>
+target_power = <span class="nm">0.80</span>
+z_beta = stats.norm.<span class="fn">ppf</span>(target_power)
+
+n_required = ((z_alpha + z_beta) * sigma / (mu1 - mu0)) ** <span class="nm">2</span>
+<span class="fn">print</span>(<span class="st">f"\nต้องการ n = {np.ceil(n_required):.0f} เพื่อ Power ≥ 80%"</span>)
+
+<span class="cm"># ─── ใช้ statsmodels (สะดวกกว่า) ────────────────</span>
+<span class="kw">from</span> statsmodels.stats.power <span class="kw">import</span> TTestPower
+analysis = <span class="fn">TTestPower</span>()
+effect_d = (mu1 - mu0) / sigma   <span class="cm"># Cohen's d</span>
+pw = analysis.<span class="fn">power</span>(effect_size=effect_d, nobs=n, alpha=alpha)
+<span class="fn">print</span>(<span class="st">f"\nstatsmodels Power = {pw:.4f}"</span>)
+</pre></div></div>
+<div class="navbtns"><button class="sec" onclick="gS(1)">← กลับ</button><button onclick="gS(3)">ต่อไป: Quiz →</button></div>`;}
+
+function L6quiz(){return `
+<h1>Quiz — Lab 6</h1><p class="sub">Power, α, β (6 ข้อ)</p>
+${Q('q6a','1. ลด α จาก 0.05 เป็น 0.01 จะเกิดอะไรขึ้น?',['β ลด และ Power เพิ่ม','β เพิ่ม และ Power ลด เพราะ Type II error สูงขึ้น','ทั้ง α และ β ลดพร้อมกัน','ไม่มีผลต่อ β'],'b','✅ ถูก! ลด α → critical value ไกลขึ้น → ยาก Reject → β ↑ → Power = 1−β ลด')}
+${Q('q6b','2. วิธีใดเพิ่ม Power โดยไม่เปลี่ยน α?',['ลด n ให้ SE ใหญ่ขึ้น','เพิ่ม n — SE ลด → การแจกแจงแคบ → Power เพิ่ม','เพิ่ม σ','ลด effect size'],'b','✅ ถูก! n ↑ → SE = σ/√n ↓ → แยก H₀ และ H₁ ได้ชัดขึ้น → Power ↑')}
+${Q('q6c','3. ในการทดสอบยาใหม่ Type II Error (β) หมายถึง?',['ยาได้รับอนุมัติทั้งที่ไม่มีประสิทธิภาพ','ยาไม่ผ่านอนุมัติทั้งที่จริงๆ มีประสิทธิภาพ (พลาดการตรวจจับ)','ยามีผลข้างเคียง','ผู้ป่วยได้รับยาผิด'],'b','✅ ถูก! β = False Negative — ยาดีแต่ถูกมองข้าม อันตรายมากในบริบทการแพทย์')}
+${Q('q6d','4. Power = 0.80 หมายความว่า?',['มีโอกาส 80% ที่ H₀ เป็นจริง','มีโอกาส 80% ที่จะตรวจพบ effect ที่มีอยู่จริง (ถ้า H₁ เป็นจริง)','β = 0.80','α = 0.20'],'b','✅ ถูก! Power = 1−β = โอกาสที่จะ Reject H₀ เมื่อ H₁ เป็นจริง (standard: ≥0.80)')}
+${Q('q6e','5. Effect size (Cohen\'s d) = 0.2 หมายถึง?',['ขนาด effect ใหญ่ ต้องการ n น้อย','ขนาด effect เล็ก ต้องการ n มากเพื่อให้มี Power พอ','Power = 0.2','α = 0.2'],'b','✅ ถูก! d=0.2 เล็ก, d=0.5 กลาง, d=0.8 ใหญ่ — effect เล็กต้องการ sample ใหญ่มากเพื่อ detect')}
+${Q('q6f','6. ข้อใดกล่าวถูกต้องเกี่ยวกับ α และ β?',['ลด α แล้ว β ลดตามเสมอ','α และ β มี tradeoff กัน — ลด α ทำให้ β เพิ่ม (ถ้า n และ σ ไม่เปลี่ยน)','เพิ่ม n ทำให้ทั้ง α และ β เพิ่มขึ้น','α และ β ไม่สัมพันธ์กัน'],'b','✅ ถูก! นี่คือ fundamental tradeoff — วิธีเดียวที่จะลดทั้งคู่พร้อมกันคือเพิ่ม n')}
+<div class="score-disp" id="score-L6"></div>
+<div class="box teal" style="margin-top:1.2rem;"><div class="box-title">🎉 ทำครบทุก Lab แล้ว!</div>ทบทวน Lab ที่คะแนนยังต่ำก่อนสอบ</div>
+<div id="final-score" style="font-family:var(--mono);font-size:15px;color:var(--teal);margin-top:.8rem;font-weight:600;"></div>
+<div class="navbtns"><button class="sec" onclick="gS(2)">← กลับ</button><button onclick="gL(0)">กลับ Lab 1</button></div>`;}
+
+// ══════════════════════════════════════════════════════
+// QUIZ HELPER
+// ══════════════════════════════════════════════════════
+function Q(id,q,opts,ans,fb){
+  const os=opts.map((o,i)=>{
+    const v=String.fromCharCode(97+i);
+    return `<label class="qo"><input type="radio" name="${id}" value="${v}"><span>${o}</span></label>`;
+  }).join('');
+  return `<div class="qb"><div class="qq">${q}</div><div class="ql">${os}</div>
+  <button style="margin-top:.6rem;" onclick="chkQ('${id}','${ans}','${fb.replace(/'/g,"\\'")}')">ตรวจคำตอบ</button>
+  <div class="qfb" id="${id}-fb"></div></div>`;
+}
+function chkQ(id,correct,msg){
+  const sel=document.querySelector(`input[name="${id}"]:checked`);
+  const fb=document.getElementById(`${id}-fb`);
+  if(!sel){fb.className='qfb show no';fb.textContent='⚠️ กรุณาเลือกคำตอบก่อน';return;}
+  document.querySelectorAll(`[name="${id}"]`).forEach(r=>r.closest('.qo').classList.remove('correct','wrong'));
+  const ok=sel.value===correct;
+  sel.closest('.qo').classList.add(ok?'correct':'wrong');
+  if(!ok) document.querySelectorAll(`[name="${id}"]`).forEach(r=>{if(r.value===correct)r.closest('.qo').classList.add('correct');});
+  fb.className=`qfb show ${ok?'ok':'no'}`;
+  fb.innerHTML=ok?msg:`❌ ไม่ถูก — ${msg}`;
+  QS[id]=ok; updScore();
+}
+function updScore(){
+  [1,2,3,4,5,6].forEach(l=>{
+    const ids=[`q${l}a`,`q${l}b`,`q${l}c`,`q${l}c2`,`q${l}c3`,`q${l}c4`,`q${l}d`,`q${l}e`,`q${l}f`];
+    const done=ids.filter(q=>QS[q]!==undefined);
+    const ok=ids.filter(q=>QS[q]===true);
+    const el=document.getElementById(`score-L${l}`);
+    if(el&&done.length>0)el.textContent=`คะแนน: ${ok.length} / ${done.length} ข้อ`;
+  });
+  const all=Object.keys(QS),ok=all.filter(q=>QS[q]===true);
+  const fe=document.getElementById('final-score');
+  if(fe)fe.textContent=`คะแนนรวม: ${ok.length} / ${all.length} ข้อ (${Math.round(ok.length/Math.max(all.length,1)*100)}%)`;
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER ENGINE
+// ══════════════════════════════════════════════════════
+function buildTabs(){
+  document.getElementById('tabbar').innerHTML=LABS.map((l,i)=>
+    `<div class="tab${i===cLab?' active':''}" id="tab-${i}" onclick="gL(${i})">
+      <span class="tab-badge" style="background:${l.tagBg};color:${l.tag}">${l.id}</span>${l.name}</div>`
+  ).join('');
+}
+function buildSide(){
+  const l=LABS[cLab];
+  document.getElementById('sidebar').innerHTML=`<div class="al">${l.id} — ${l.short}</div>`+
+    l.steps.map((s,i)=>`<div class="ai${i===cStep?' active':(visited[cLab].has(i)?' done':'')}" onclick="gS(${i})">
+      <div class="dot"></div>${s}</div>`).join('');
+}
+function buildMain(){
+  document.getElementById('main').innerHTML=`<div class="sec visible">${LABS[cLab].content[cStep]()}</div>`;
+  setTimeout(afterRender,40);
+}
+function buildProg(){
+  let tot=0,dn=0;
+  LABS.forEach((l,i)=>{tot+=l.steps.length;dn+=visited[i].size;});
+  document.getElementById('pgf').style.width=Math.round(dn/tot*100)+'%';
+  document.getElementById('pgt').textContent=`${dn}/${tot}`;
+}
+function gL(i){
+  cLab=i;cStep=0;visited[i].add(0);
+  buildTabs();buildSide();buildMain();buildProg();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function gS(i){
+  cStep=i;visited[cLab].add(i);
+  buildSide();buildMain();buildProg();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ══════════════════════════════════════════════════════
+// AFTER-RENDER
+// ══════════════════════════════════════════════════════
+function afterRender(){
+  if(cLab===0&&cStep===1)l1up();
+  if(cLab===1&&cStep===1)l2up();
+  if(cLab===2&&cStep===1)l3up();
+  if(cLab===3&&cStep===1)l4smp();
+  if(cLab===4&&cStep===1)initChi();
+  if(cLab===5&&cStep===1)l6up();
+  if(cStep===3)updScore();
+}
+
+// ══════════════════════════════════════════════════════
+// LAB 1 CANVAS
+// ══════════════════════════════════════════════════════
+function l1up(){
+  const mu0=+document.getElementById('s-mu0').value;
+  const xb=+document.getElementById('s-xb').value;
+  const sg=+document.getElementById('s-sg').value;
+  const n=+document.getElementById('s-n').value;
+  const a=+document.getElementById('s-a').value;
+  const tail=document.getElementById('s-t').value;
+  ['mu0','xb','sg','n'].forEach(k=>document.getElementById('v-'+k).textContent=
+    k==='mu0'?mu0:k==='xb'?xb:k==='sg'?sg:n);
+  const se=sg/Math.sqrt(n),z=(xb-mu0)/se;
+  let p=tail==='two'?2*(1-ncdf(Math.abs(z))):tail==='right'?1-ncdf(z):ncdf(z);
+  const c=document.getElementById('c-l1');if(!c)return;
+  const ctx=c.getContext('2d'),W=c.width,H=c.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#fafaf8';ctx.fillRect(0,0,W,H);
+  const lo=mu0-4.2*se,hi=mu0+4.2*se;
+  const xS=v=>30+(v-lo)/(hi-lo)*(W-60);
+  const yS=v=>H-22-v*(H-44);
+  const zcrit=a===0.01?2.576:a===0.05?1.96:1.645;
+  const cL=mu0-zcrit*se,cR=mu0+zcrit*se;
+  const fill=(x0,x1,col)=>{
+    ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(xS(x0),H-22);
+    for(let x=x0;x<=x1;x+=(hi-lo)/300)ctx.lineTo(xS(x),yS(npdf(x,mu0,se)/npdf(mu0,mu0,se)));
+    ctx.lineTo(xS(x1),H-22);ctx.closePath();ctx.fill();
+  };
+  if(tail==='two'||tail==='right')fill(cR,hi,'rgba(29,78,216,.18)');
+  if(tail==='two'||tail==='left')fill(lo,cL,'rgba(29,78,216,.18)');
+  ctx.beginPath();ctx.strokeStyle='#1d4ed8';ctx.lineWidth=2.5;
+  for(let xi=0;xi<=W-60;xi++){const xv=lo+xi/(W-60)*(hi-lo);const yv=yS(npdf(xv,mu0,se)/npdf(mu0,mu0,se));xi===0?ctx.moveTo(30+xi,yv):ctx.lineTo(30+xi,yv);}
+  ctx.stroke();
+  const sv=Math.max(lo,Math.min(hi,xb));
+  ctx.strokeStyle='#c2410c';ctx.lineWidth=2;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(xS(sv),H-22);ctx.lineTo(xS(sv),12);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#c2410c';ctx.font='bold 12px Sarabun';ctx.textAlign='center';ctx.fillText('x̄='+xb,xS(sv),10);
+  ctx.fillStyle='#1d4ed8';ctx.fillText('μ₀='+mu0,xS(mu0),H-6);
+  ctx.strokeStyle='#d1d5db';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(30,H-22);ctx.lineTo(W-30,H-22);ctx.stroke();
+  const reject=(tail==='two'&&Math.abs(z)>zcrit)||(tail==='right'&&z>zcrit)||(tail==='left'&&z<-zcrit);
+  document.getElementById('r-l1').innerHTML=`
+    <div class="rrow"><span>SE = σ/√n</span><span class="rv">${se.toFixed(4)}</span></div>
+    <div class="rrow"><span>z = (x̄ − μ₀) / SE</span><span class="rv">${z.toFixed(4)}</span></div>
+    <div class="rrow"><span>p-value (${tail})</span><span class="rv">${p.toFixed(4)}</span></div>
+    <div class="rrow"><span>α = ${a}</span><span class="rv">${p<a?'p < α':'p ≥ α'}</span></div>
+    <div class="verdict ${reject?'vr':'vf'}">${reject?'✗ Reject H₀ — มีนัยสำคัญทางสถิติ':'✓ Fail to Reject H₀ — ไม่มีนัยสำคัญ'}</div>`;
+}
+
+// ══════════════════════════════════════════════════════
+// LAB 2 CANVAS
+// ══════════════════════════════════════════════════════
+function l2up(){
+  const tt=document.getElementById('l2tt').value;
+  const tl=document.getElementById('l2tl').value;
+  const al=+document.getElementById('l2al').value;
+  const xb=+document.getElementById('l2xb').value;
+  const mu=+document.getElementById('l2mu').value;
+  const sd=+document.getElementById('l2sd').value;
+  const n=+document.getElementById('l2n').value;
+  const se=sd/Math.sqrt(n),stat=(xb-mu)/se,df=n-1;
+  const zcrit=al===0.01?2.576:al===0.05?1.96:1.645;
+  const crit1=tl==='two'?zcrit:tl==='right'?al===0.01?2.326:al===0.05?1.645:1.282:al===0.01?2.326:al===0.05?1.645:1.282;
+  let p=tl==='two'?2*(1-ncdf(Math.abs(stat))):tl==='right'?1-ncdf(stat):ncdf(stat);
+  const c=document.getElementById('c-l2');if(!c)return;
+  const ctx=c.getContext('2d'),W=c.width,H=c.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#fafaf8';ctx.fillRect(0,0,W,H);
+  const lo=-4.5,hi=4.5;
+  const xS=v=>30+(v-lo)/(hi-lo)*(W-60);
+  const yS=v=>H-18-v*(H-36);
+  const fill=(x0,x1,col)=>{ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(xS(x0),H-18);for(let x=x0;x<=x1;x+=0.04)ctx.lineTo(xS(x),yS(npdf(x,0,1)/npdf(0,0,1)));ctx.lineTo(xS(x1),H-18);ctx.closePath();ctx.fill();};
+  if(tl==='two'||tl==='right')fill(crit1,hi,'rgba(29,78,216,.18)');
+  if(tl==='two'||tl==='left')fill(lo,-crit1,'rgba(29,78,216,.18)');
+  ctx.beginPath();ctx.strokeStyle='#1d4ed8';ctx.lineWidth=2.5;
+  for(let xi=0;xi<=W-60;xi++){const xv=lo+xi/(W-60)*(hi-lo);const yv=yS(npdf(xv,0,1)/npdf(0,0,1));xi===0?ctx.moveTo(30+xi,yv):ctx.lineTo(30+xi,yv);}
+  ctx.stroke();
+  const sv=Math.max(lo,Math.min(hi,stat));
+  ctx.strokeStyle='#c2410c';ctx.lineWidth=2;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(xS(sv),H-18);ctx.lineTo(xS(sv),10);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#c2410c';ctx.font='bold 12px Sarabun';ctx.textAlign='center';ctx.fillText((tt==='z'?'z':'t')+'='+stat.toFixed(2),xS(sv),8);
+  ctx.strokeStyle='#d1d5db';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(30,H-18);ctx.lineTo(W-30,H-18);ctx.stroke();
+  ctx.fillStyle='#9ca3af';ctx.font='11px Sarabun';ctx.textAlign='center';
+  [-3,-2,-1,0,1,2,3].forEach(v=>ctx.fillText(v,xS(v),H-4));
+  const reject=(tl==='two'&&Math.abs(stat)>crit1)||(tl==='right'&&stat>crit1)||(tl==='left'&&stat<-crit1);
+  document.getElementById('r-l2').innerHTML=`
+    <div class="rrow"><span>SE</span><span class="rv">${se.toFixed(4)}</span></div>
+    <div class="rrow"><span>${tt==='z'?'z':'t'} statistic</span><span class="rv">${stat.toFixed(4)}</span></div>
+    ${tt==='t'?`<div class="rrow"><span>df</span><span class="rv">${df}</span></div>`:''}
+    <div class="rrow"><span>p-value (${tl})</span><span class="rv">${p.toFixed(4)}</span></div>
+    <div class="rrow"><span>ค่าวิกฤต</span><span class="rv">±${crit1} (α=${al})</span></div>
+    <div class="verdict ${reject?'vr':'vf'}">${reject?'✗ Reject H₀':'✓ Fail to Reject H₀'}</div>`;
+}
+
+// ══════════════════════════════════════════════════════
+// LAB 3 CANVAS
+// ══════════════════════════════════════════════════════
+function l3up(){
+  const m1=+document.getElementById('m1').value;
+  const m2=+document.getElementById('m2').value;
+  const m3=+document.getElementById('m3').value;
+  const sw=+document.getElementById('sw').value;
+  const ng=+document.getElementById('ng').value;
+  const al=+document.getElementById('l3al').value;
+  ['m1','m2','m3'].forEach(k=>document.getElementById(k+'v').textContent=+document.getElementById(k).value);
+  document.getElementById('swv').textContent=sw;document.getElementById('ngv').textContent=ng;
+  const k=3,N=ng*k,gm=(m1+m2+m3)/3;
+  const SSB=ng*([m1,m2,m3].reduce((a,m)=>a+(m-gm)**2,0));
+  const SSW=(k*ng-k)*sw*sw,SST=SSB+SSW;
+  const MSB=SSB/(k-1),MSW=SSW/(N-k),F=MSB/MSW;
+  const p=fPval(F,k-1,N-k);
+  const c=document.getElementById('c-l3');if(!c)return;
+  const ctx=c.getContext('2d'),W=c.width,H=c.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#fafaf8';ctx.fillRect(0,0,W,H);
+  const cols=['#1d4ed8','#0f766e','#b45309'];
+  const lo=Math.min(m1,m2,m3)-3.5*sw,hi=Math.max(m1,m2,m3)+3.5*sw;
+  const xS=v=>30+(v-lo)/(hi-lo)*(W-60);
+  const yS=v=>H-22-v*(H-44);
+  const peak=npdf(0,0,sw);
+  [m1,m2,m3].forEach((m,ci)=>{
+    ctx.fillStyle=cols[ci]+'28';
+    ctx.beginPath();ctx.moveTo(xS(m-4*sw),H-22);
+    for(let x=m-4*sw;x<=m+4*sw;x+=(hi-lo)/300)ctx.lineTo(xS(x),yS(npdf(x,m,sw)/peak));
+    ctx.lineTo(xS(m+4*sw),H-22);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.strokeStyle=cols[ci];ctx.lineWidth=2;
+    for(let x=m-4*sw;x<=m+4*sw;x+=(hi-lo)/300){const y=yS(npdf(x,m,sw)/peak);x===m-4*sw?ctx.moveTo(xS(x),y):ctx.lineTo(xS(x),y);}
+    ctx.stroke();
+    ctx.fillStyle=cols[ci];ctx.font='bold 12px Sarabun';ctx.textAlign='center';
+    ctx.fillText('μ'+(ci+1)+'='+m,xS(m),H-6);
+  });
+  ctx.strokeStyle='#374151';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(xS(gm),H-22);ctx.lineTo(xS(gm),12);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#374151';ctx.font='11px Sarabun';ctx.textAlign='center';ctx.fillText('x̄̄='+gm.toFixed(1),xS(gm),10);
+  ctx.strokeStyle='#d1d5db';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(30,H-22);ctx.lineTo(W-30,H-22);ctx.stroke();
+  const reject=p<al;
+  document.getElementById('l3tb').innerHTML=`
+    <tr><td>ระหว่างกลุ่ม</td><td>${SSB.toFixed(2)}</td><td>${k-1}</td><td>${MSB.toFixed(2)}</td><td class="fval-cell">${F.toFixed(3)}</td><td>${p.toFixed(4)}</td><td style="color:${reject?'var(--coral)':'var(--teal)'};font-weight:600">${reject?'Reject H₀':'Fail to Reject'}</td></tr>
+    <tr><td>ภายในกลุ่ม</td><td>${SSW.toFixed(2)}</td><td>${N-k}</td><td>${MSW.toFixed(2)}</td><td>—</td><td>—</td><td>—</td></tr>
+    <tr class="tot"><td>รวม</td><td>${SST.toFixed(2)}</td><td>${N-1}</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>`;
+  document.getElementById('r-l3').innerHTML=`
+    <div class="rrow"><span>F = MSB/MSW</span><span class="rv">${F.toFixed(4)}</span></div>
+    <div class="rrow"><span>p-value (F-dist)</span><span class="rv">${p.toFixed(4)}</span></div>
+    <div class="verdict ${reject?'vr':'vf'}">${reject?'✗ Reject H₀ — ค่าเฉลี่ยบางกลุ่มต่างกัน':'✓ Fail to Reject H₀ — ไม่มีหลักฐานความแตกต่าง'}</div>`;
+}
+
+// ══════════════════════════════════════════════════════
+// LAB 4 SCATTER
+// ══════════════════════════════════════════════════════
+let l4pts=[];
+function l4rst(){l4pts=[];l4draw();}
+function l4smp(){l4pts=[[2,4.2],[3,5.8],[4,7.1],[5,8.0],[6,9.4],[7,10.9],[8,11.8],[9,13.2],[10,14.0]];l4draw();}
+function l4smp2(){l4pts=[[1,8],[2,3],[3,9],[4,5],[5,12],[6,6],[7,14],[8,9],[9,15],[10,11]];l4draw();}
+function l4add(e){
+  const c=document.getElementById('c-l4');if(!c)return;
+  const r=c.getBoundingClientRect();
+  const px=(e.clientX-r.left)*(c.width/r.width);
+  const py=(e.clientY-r.top)*(c.height/r.height);
+  const W=c.width,H=c.height,pd=45;
+  const xv=1+(px-pd)/(W-2*pd)*14,yv=20-(py-pd)/(H-2*pd)*20;
+  if(xv<1||xv>15||yv<0||yv>20)return;
+  l4pts.push([+xv.toFixed(1),+yv.toFixed(1)]);l4draw();
+}
+function l4draw(){
+  const c=document.getElementById('c-l4');if(!c)return;
+  const ctx=c.getContext('2d'),W=c.width,H=c.height,pd=45;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#fafaf8';ctx.fillRect(0,0,W,H);
+  const xS=v=>pd+(v-1)/14*(W-2*pd),yS=v=>H-pd-(v/20)*(H-2*pd);
+  ctx.strokeStyle='#e5e7eb';ctx.lineWidth=1;
+  for(let x=1;x<=15;x+=2){ctx.beginPath();ctx.moveTo(xS(x),pd);ctx.lineTo(xS(x),H-pd);ctx.stroke();}
+  for(let y=0;y<=20;y+=5){ctx.beginPath();ctx.moveTo(pd,yS(y));ctx.lineTo(W-pd,yS(y));ctx.stroke();}
+  ctx.strokeStyle='#9ca3af';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(pd,H-pd);ctx.lineTo(W-pd,H-pd);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pd,H-pd);ctx.lineTo(pd,pd);ctx.stroke();
+  ctx.fillStyle='#9ca3af';ctx.font='11px Sarabun';ctx.textAlign='center';
+  [1,5,10,15].forEach(v=>ctx.fillText(v,xS(v),H-pd+13));
+  ctx.textAlign='right';[0,5,10,15,20].forEach(v=>ctx.fillText(v,pd-5,yS(v)+4));
+  if(l4pts.length<2){
+    l4pts.forEach(([x,y])=>{ctx.beginPath();ctx.arc(xS(x),yS(y),5,0,Math.PI*2);ctx.fillStyle='#1d4ed8';ctx.fill();});
+    const ri=document.getElementById('r-l4');if(ri)ri.innerHTML='<div style="color:var(--muted)">เพิ่มจุดอย่างน้อย 3 จุด</div>';return;
+  }
+  const n=l4pts.length;
+  const xm=l4pts.reduce((a,[x])=>a+x,0)/n,ym=l4pts.reduce((a,[,y])=>a+y,0)/n;
+  const sxx=l4pts.reduce((a,[x])=>a+(x-xm)**2,0),sxy=l4pts.reduce((a,[x,y])=>a+(x-xm)*(y-ym),0);
+  const b1=sxy/sxx,b0=ym-b1*xm;
+  const yhat=l4pts.map(([x])=>b0+b1*x);
+  const sst=l4pts.reduce((a,[,y])=>a+(y-ym)**2,0);
+  const sse=l4pts.reduce((a,[,y],i)=>a+(y-yhat[i])**2,0);
+  const ssr=sst-sse,r2=ssr/sst;
+  if(document.getElementById('showR')?.checked){
+    ctx.strokeStyle='rgba(194,65,12,.5)';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+    l4pts.forEach(([x,y],i)=>{ctx.beginPath();ctx.moveTo(xS(x),yS(y));ctx.lineTo(xS(x),yS(yhat[i]));ctx.stroke();});
+    ctx.setLineDash([]);
+  }
+  ctx.strokeStyle='#0f766e';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(xS(1),yS(b0+b1*1));ctx.lineTo(xS(15),yS(b0+b1*15));ctx.stroke();
+  l4pts.forEach(([x,y])=>{ctx.beginPath();ctx.arc(xS(x),yS(y),5.5,0,Math.PI*2);ctx.fillStyle='#1d4ed8';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();});
+  ctx.fillStyle='#0f766e';ctx.font='bold 11px IBM Plex Mono';ctx.textAlign='left';
+  ctx.fillText(`ŷ = ${b0.toFixed(2)} + ${b1.toFixed(2)}x   R² = ${r2.toFixed(3)}`,pd+4,pd-4);
+  const ri=document.getElementById('r-l4');
+  if(ri)ri.innerHTML=`
+    <div class="rrow"><span>β̂₀ (intercept)</span><span class="rv">${b0.toFixed(4)}</span></div>
+    <div class="rrow"><span>β̂₁ (slope)</span><span class="rv">${b1.toFixed(4)}</span></div>
+    <div class="rrow"><span>R²</span><span class="rv">${r2.toFixed(4)}</span></div>
+    <div class="rrow"><span>SST / SSR / SSE</span><span class="rv">${sst.toFixed(2)} / ${ssr.toFixed(2)} / ${sse.toFixed(2)}</span></div>`;
+  const ii=document.getElementById('info-l4');if(ii)ii.textContent=`n = ${n} จุด`;
+}
+
+// ══════════════════════════════════════════════════════
+// LAB 5 CHI-SQUARE
+// ══════════════════════════════════════════════════════
+let chiO=[[40,30,20],[25,35,50]];
+let chiInited=false;
+function initChi(){
+  if(chiInited)return; chiInited=true;
+  buildChiGrid();
+}
+function buildChiGrid(){
+  const wrap=document.getElementById('chi-wrap');if(!wrap)return;
+  const rows=['กลุ่ม A','กลุ่ม B'],cols=['ประเภท 1','ประเภท 2','ประเภท 3'];
+  let h=`<div style="overflow-x:auto;"><table style="border-collapse:collapse;font-size:13px;width:100%;">
+    <thead><tr><th style="padding:.4rem .7rem;border:1px solid var(--border);background:var(--surface2);"></th>`;
+  cols.forEach(c=>h+=`<th style="padding:.4rem .7rem;border:1px solid var(--border);background:var(--surface2);">${c}</th>`);
+  h+=`<th style="padding:.4rem .7rem;border:1px solid var(--border);background:var(--surface2);">รวม</th></tr></thead><tbody>`;
+  chiO.forEach((row,ri)=>{
+    h+=`<tr><td style="padding:.4rem .7rem;border:1px solid var(--border);font-weight:600;background:var(--surface2);">${rows[ri]}</td>`;
+    row.forEach((v,ci)=>h+=`<td style="padding:.2rem .3rem;border:1px solid var(--border);">
+      <input type="number" value="${v}" min="0" style="width:62px;text-align:center;border:1px solid var(--border);border-radius:4px;padding:.25rem;font-family:var(--mono);font-size:13px;"
+      oninput="chiO[${ri}][${ci}]=+this.value||0;chiCalc()"></td>`);
+    h+=`<td style="padding:.4rem .7rem;border:1px solid var(--border);font-family:var(--mono);font-weight:600;" id="rt${ri}">${row.reduce((a,b)=>a+b,0)}</td></tr>`;
+  });
+  h+=`<tr><td style="padding:.4rem .7rem;border:1px solid var(--border);font-weight:600;background:var(--surface2);">รวม</td>`;
+  cols.forEach((_,ci)=>h+=`<td style="padding:.4rem .7rem;border:1px solid var(--border);font-family:var(--mono);" id="ct${ci}">—</td>`);
+  h+=`<td style="padding:.4rem .7rem;border:1px solid var(--border);font-family:var(--mono);font-weight:700;" id="cgt">—</td></tr>`;
+  h+=`</tbody></table></div>`;
+  wrap.innerHTML=h;chiCalc();
+}
+function chiCalc(){
+  const r=chiO.length,c=chiO[0].length;
+  const rT=chiO.map(row=>row.reduce((a,b)=>a+b,0));
+  const cT=Array.from({length:c},(_,ci)=>chiO.reduce((a,row)=>a+row[ci],0));
+  const grand=rT.reduce((a,b)=>a+b,0);
+  rT.forEach((v,i)=>{const e=document.getElementById('rt'+i);if(e)e.textContent=v;});
+  cT.forEach((v,i)=>{const e=document.getElementById('ct'+i);if(e)e.textContent=v;});
+  const ge=document.getElementById('cgt');if(ge)ge.textContent=grand;
+  const E=chiO.map((row,ri)=>row.map((_,ci)=>rT[ri]*cT[ci]/grand));
+  const contrib=chiO.map((row,ri)=>row.map((o,ci)=>{const e=E[ri][ci];return e>0?(o-e)**2/e:0;}));
+  const chi2=contrib.flat().reduce((a,b)=>a+b,0);
+  const df=(r-1)*(c-1);
+  const p=chi2Pval(chi2,df);
+  const el=document.getElementById('r-l5');
+  if(el)el.innerHTML=`
+    <div class="rrow"><span>χ² statistic</span><span class="rv">${chi2.toFixed(4)}</span></div>
+    <div class="rrow"><span>df = (r−1)(c−1)</span><span class="rv">${df}</span></div>
+    <div class="rrow"><span>p-value</span><span class="rv">${p.toFixed(4)}</span></div>
+    <div class="rrow"><span>Expected ทุกช่อง ≥ 5?</span><span class="rv">${E.flat().every(v=>v>=5)?'✓ ใช่':'⚠️ บางช่อง &lt; 5'}</span></div>
+    <div class="verdict ${p<0.05?'vr':'vf'}">${p<0.05?'✗ Reject H₀ — ตัวแปรสัมพันธ์กัน (not independent)':'✓ Fail to Reject H₀ — ไม่มีหลักฐานว่าสัมพันธ์'}</div>`;
+  drawContrib(contrib);
+}
+function drawContrib(ct){
+  const c=document.getElementById('c-l5');if(!c)return;
+  const ctx=c.getContext('2d'),W=c.width,H=c.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#fafaf8';ctx.fillRect(0,0,W,H);
+  const nr=ct.length,nc=ct[0].length;
+  const flat=ct.flat(),mx=Math.max(...flat,0.01);
+  const cw=(W-70)/nc,ch=(H-30)/nr;
+  ['กลุ่ม A','กลุ่ม B'].forEach((l,i)=>{ctx.fillStyle='#6b7280';ctx.font='11px Sarabun';ctx.textAlign='right';ctx.fillText(l,64,i*ch+ch/2+4);});
+  ['ประเภท 1','ประเภท 2','ประเภท 3'].forEach((l,i)=>{ctx.fillStyle='#6b7280';ctx.font='11px Sarabun';ctx.textAlign='center';ctx.fillText(l,70+i*cw+cw/2,H-10);});
+  ct.forEach((row,ri)=>row.forEach((v,ci)=>{
+    const t=v/mx;
+    const r2=Math.round(29+t*(194-29)),g=Math.round(78+t*(65-78)),b2=Math.round(216+t*(60-216));
+    ctx.fillStyle=`rgb(${r2},${g},${b2})`;
+    ctx.fillRect(70+ci*cw,ri*ch,cw-2,ch-2);
+    ctx.fillStyle=t>0.5?'#fff':'#1a1916';ctx.font='11px Sarabun';ctx.textAlign='center';
+    ctx.fillText(v.toFixed(2),70+ci*cw+cw/2,ri*ch+ch/2+4);
+  }));
+}
+
+// ══════════════════════════════════════════════════════
+// LAB 6 POWER
+// ══════════════════════════════════════════════════════
+function l6up(){
+  const es=+document.getElementById('s-es').value;
+  const s=+document.getElementById('s-s6').value;
+  const n=+document.getElementById('s-n6').value;
+  const a=+document.getElementById('s-a6').value;
+  document.getElementById('v-es').textContent=es.toFixed(1);
+  document.getElementById('v-s6').textContent=s.toFixed(1);
+  document.getElementById('v-n6').textContent=n;
+  const se=s/Math.sqrt(n);
+  const za=a===0.01?2.326:a===0.05?1.645:1.282;
+  const crit=za*se,mu1=es;
+  const beta=ncdf((crit-mu1)/se),power=1-beta;
+  const c=document.getElementById('c-l6');if(!c)return;
+  const ctx=c.getContext('2d'),W=c.width,H=c.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#fafaf8';ctx.fillRect(0,0,W,H);
+  const lo=Math.min(0,mu1)-4.5*se,hi=Math.max(0,mu1)+4.5*se;
+  const xS=v=>35+(v-lo)/(hi-lo)*(W-70);
+  const yS=v=>H-28-v*(H-56);
+  const pk=npdf(0,0,se);
+  const fillR=(mu,x0,x1,col)=>{ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(xS(x0),H-28);for(let x=x0;x<=x1;x+=(hi-lo)/400)ctx.lineTo(xS(x),yS(npdf(x,mu,se)/pk));ctx.lineTo(xS(x1),H-28);ctx.closePath();ctx.fill();};
+  fillR(0,crit,hi,'rgba(194,65,12,.22)');
+  fillR(mu1,lo,crit,'rgba(180,83,9,.16)');
+  fillR(mu1,crit,hi,'rgba(15,118,110,.22)');
+  [[0,'#1d4ed8'],[mu1,'#0f766e']].forEach(([mu,col])=>{
+    ctx.beginPath();ctx.strokeStyle=col;ctx.lineWidth=2.5;
+    for(let xi=0;xi<=W-70;xi++){const xv=lo+xi/(W-70)*(hi-lo);const yv=yS(npdf(xv,mu,se)/pk);xi===0?ctx.moveTo(35+xi,yv):ctx.lineTo(35+xi,yv);}
+    ctx.stroke();
+  });
+  ctx.strokeStyle='#374151';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(xS(crit),H-28);ctx.lineTo(xS(crit),12);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#374151';ctx.font='11px Sarabun';ctx.textAlign='center';ctx.fillText('critical',xS(crit),10);
+  ctx.fillStyle='#1d4ed8';ctx.font='bold 12px Sarabun';ctx.textAlign='center';ctx.fillText('H₀: μ=0',xS(0),H-10);
+  ctx.fillStyle='#0f766e';ctx.fillText(`H₁: μ=${mu1.toFixed(1)}`,xS(mu1),H-1);
+  ctx.strokeStyle='#d1d5db';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(35,H-28);ctx.lineTo(W-35,H-28);ctx.stroke();
+  const legend=[['α = Type I Error = '+(a*100).toFixed(0)+'%','#c2410c'],['β = Type II Error = '+(beta*100).toFixed(1)+'%','#b45309'],['Power = 1−β = '+(power*100).toFixed(1)+'%','#0f766e']];
+  legend.forEach(([txt,col],i)=>{ctx.fillStyle=col+'aa';ctx.fillRect(W-195,18+i*18,10,10);ctx.fillStyle='#374151';ctx.font='11px Sarabun';ctx.textAlign='left';ctx.fillText(txt,W-181,18+i*18+9);});
+  document.getElementById('r-l6').innerHTML=`
+    <div class="rrow"><span>SE = σ/√n</span><span class="rv">${se.toFixed(4)}</span></div>
+    <div class="rrow"><span>ค่าวิกฤต</span><span class="rv">${crit.toFixed(4)}</span></div>
+    <div class="rrow"><span>α (Type I Error)</span><span class="rv">${(a*100).toFixed(0)}%</span></div>
+    <div class="rrow"><span>β (Type II Error)</span><span class="rv">${(beta*100).toFixed(1)}%</span></div>
+    <div class="rrow"><span>Power = 1−β</span><span class="rv" style="color:var(--teal)">${(power*100).toFixed(1)}%</span></div>`;
+}
+
+// ══════════════════════════════════════════════════════
+// INIT — wrapped in DOMContentLoaded to guarantee DOM is ready
+// ══════════════════════════════════════════════════════
+function init() {
+  visited[0].add(0);
+  buildTabs();buildSide();buildMain();buildProg();
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+</body>
+</html>
